@@ -14,4 +14,5 @@ while(i < 100):
 
 sensor_1.terminate()
 sensor_2.terminate()
+print("Hello World!")
 
