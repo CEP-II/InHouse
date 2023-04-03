@@ -23,7 +23,7 @@ class SensorRead:
         client.loop_start()
     
     # on_message put time signatures into the queue
-    def on_message(self, client, userdata, msg):
+    def on_message(self, msg):
         now = datetime.now()
         message = json.loads(msg.payload)
         print(message["illuminance"])
@@ -47,7 +47,7 @@ class SensorRead:
 
 class LightController:
     ### Initializes the connection to the light component
-    def __init__(self, name, ID, client):
+    def __init__(self, name, ID):
         self.name = name
         self.ID = ID
 
