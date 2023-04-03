@@ -20,19 +20,22 @@ class MonitorMovement:
 
     ### Logic for when and which lights to turn on
     def monitorMovement(self):
-        
+        delta = 0                   # Time since last reading
         self.lightWrite(0, False)
+
         while True:
-            reading = self.readSensorData(0)
+            reading = self.readSensorData(0)    # Time Reading
+
+            # If there's no time return from get_data
             if not type(reading) == type(self.epoch_time):
                 continue
-            #self.epoch_time = self.readSensorData(0)
+
             print(f"Time since Reading: {self.delta(reading)}")
-            if self.delta(reading) > 10:
+            if self.delta(reading) < 10:
+                self.epoch_time = reading
                 self.lightWrite(0, True)
             else:
                 self.lightWrite(0, False)
-            self.epoch_time = reading
             sleep(1)
 
 
