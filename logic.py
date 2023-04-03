@@ -11,11 +11,24 @@ class MonitorMovement:
         self.lights = lights
         self.lock = threading.Lock()
 
+        self.epoch_time = datetime.now()
+
+    ### Will return the time from last time
+    def delta(self, now):
+        delta = (now - self.epoch_time)
+        return int(delta.total_seconds())
+
     ### Logic for when and which lights to turn on
     def monitorMovement(self):
+        self.lightWrite(0, False)
         while True:
+            #self.epoch_time = self.readSensorData(0)
             print(f"return from getData: {self.readSensorData(0)}")
+            if self.delta(self.readSensorData(0)) > 30:
+                self.lightWrite(0, True)
             sleep(1)
+
+
 
     
     ### Gets the latest output from the sensor (In datetime)
