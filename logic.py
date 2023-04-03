@@ -14,7 +14,7 @@ class MonitorMovement:
         self.epoch_time = datetime.now()
 
     ### Will return the time from last time
-    def delta(t1, t2):
+    def delta(self, t1, t2):
         delta = (t2 - t1)
         return int(delta.total_seconds())
 
