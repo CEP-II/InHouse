@@ -10,6 +10,7 @@ sensors = []
 sensors.append(sensor_1)
 
 led_1 = LightController("zigbee2mqtt/0xbc33acfffe8b8d7c/set", 0)
+led_1.turnOff()
 lights = []
 lights.append(led_1)
 
