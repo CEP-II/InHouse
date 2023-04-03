@@ -61,8 +61,8 @@ class LightController:
 
         broker_address = "localhost"
         broker_port = 1883
-        client = mqtt.Client()
-        client.connect(broker_address, broker_port)
+        self.client = mqtt.Client()
+        self.client.connect(broker_address, broker_port)
 
         #ID's to pass for on and off
         broker_out_on = {"color":{"r":255,"g":255,"b":255}}
