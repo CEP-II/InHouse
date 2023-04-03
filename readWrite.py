@@ -23,7 +23,7 @@ class SensorRead:
         client.loop_start()
     
     # on_message put time signatures into the queue
-    def on_message(self, msg):
+    def on_message(client, userdata, msg, self):
         now = datetime.now()
         message = json.loads(msg.payload)
         print(message["illuminance"])
@@ -35,6 +35,7 @@ class SensorRead:
     def getData(self):
         while not self.q.empty():       #will run through untill the most recent input of the queue
             self.sensorVal = self.q.pop(0)
+        
         return self.sensorVal
 
     ### Terminates the loops on each thread
