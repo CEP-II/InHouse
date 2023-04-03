@@ -34,7 +34,7 @@ class SensorRead:
     ### The getData returns the latest time sensor was activated
     def getData(self):
         while not self.q.empty():       #will run through untill the most recent input of the queue
-            self.sensorVal = self.q.get()
+            self.sensorVal = self.q.pop(0)
         return self.sensorVal
 
     ### Terminates the loops on each thread
