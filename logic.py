@@ -22,9 +22,12 @@ class MonitorMovement:
     def monitorMovement(self):
         self.lightWrite(0, False)
         while True:
+            reading = self.readSensorData(0)
+            if not type(reading) == type(self.epoch_time):
+                continue
             #self.epoch_time = self.readSensorData(0)
-            print(f"return from getData: {self.readSensorData(0)}")
-            if self.delta(self.readSensorData(0)) > 30:
+            print(f"return from getData: {reading}")
+            if self.delta(reading) > 30:
                 self.lightWrite(0, True)
             sleep(1)
 
