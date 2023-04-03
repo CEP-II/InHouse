@@ -12,7 +12,7 @@ class SensorRead:
         self.name = name        # individual name of each sensor
         self.val = ID          # ID for each sensor 
         self.sensorVal = datetime.now()      # Time stamp to pass
-        self.q = Queue()        # Queues are thread-safe 
+        q = Queue()        # Queues are thread-safe 
 
         ## Logic to start the loop of threads
         client = mqtt.Client()
@@ -23,7 +23,7 @@ class SensorRead:
         client.loop_start()
     
     # on_message put time signatures into the queue
-    def on_message(client, userdata, msg, self):
+    def on_message(client, userdata, msg):
         """
         if msg is None or msg.payload is None:
             return
@@ -34,9 +34,10 @@ class SensorRead:
         self.q.put(now)
         return now
         """
+        global q
         print("Message recieved")
         now = datetime.now()
-        self.q.put(now)
+        q.put(now)
     
     ### The getData returns the latest time sensor was activated
     def getData(self):
