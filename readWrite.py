@@ -29,7 +29,7 @@ class SensorRead:
         print(message["illuminance"])
         self.sensorVal = now
         self.q.put(now)
-        return now
+        #return now
     
     ### The getData returns the latest time sensor was activated
     def getData(self):
