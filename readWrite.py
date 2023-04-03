@@ -73,11 +73,13 @@ class LightController:
 
     ### Turns on the light
     def turnOn(self):
+        print("Turn On")
         message = self.data_out_on          # Message to turn on
         self.client.publish(self.name, message)  # Publishes to self.name aka topic
 
     ### Turns off the light
     def turnOff(self):
+        print("Turn Off")
         message = self.data_out_off          # Message to turn off
         self.client.publish(self.name, message)   # Publishes to self.name aka topic
     
