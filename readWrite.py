@@ -74,12 +74,12 @@ class LightController:
     ### Turns on the light
     def turnOn(self):
         message = self.data_out_on          # Message to turn on
-        self.client.publish(message, self.name)  # Publishes to self.name aka topic
+        self.client.publish(self.name, message)  # Publishes to self.name aka topic
 
     ### Turns off the light
     def turnOff(self):
         message = self.data_out_off          # Message to turn off
-        self.client.publish(message, self.name)   # Publishes to self.name aka topic
+        self.client.publish(self.name, message)   # Publishes to self.name aka topic
     
     ### Terminates the connection
     def terminate(self, client):
