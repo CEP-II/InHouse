@@ -24,13 +24,14 @@ class MonitorMovement:
 
         while True:
             reading = self.readSensorData(0)    # Time Reading
+            now = datetime.now()
 
             # If there's no time return from get_data
             if not type(reading) == type(self.epoch_time):
                 continue
 
 
-            delta = self.delta(reading, datetime.now())
+            delta = self.delta(reading, now)
             print(f"Time since Reading: {delta}")
             if delta < 10:
                 self.epoch_time = reading
