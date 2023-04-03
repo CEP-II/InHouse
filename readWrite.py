@@ -72,14 +72,14 @@ class LightController:
         self.data_out_off = json.dumps(broker_out_off)
 
     ### Turns on the light
-    def turnOn(self, client):
+    def turnOn(self):
         message = self.data_out_on          # Message to turn on
-        client.publish(message, self.name)  # Publishes to self.name aka topic
+        self.client.publish(message, self.name)  # Publishes to self.name aka topic
 
     ### Turns off the light
-    def turnOff(self, client):
+    def turnOff(self):
         message = self.data_out_off          # Message to turn off
-        client.publish(message, self.name)   # Publishes to self.name aka topic
+        self.client.publish(message, self.name)   # Publishes to self.name aka topic
     
     ### Terminates the connection
     def terminate(self, client):
