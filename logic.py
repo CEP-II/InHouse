@@ -1,6 +1,7 @@
 import threading
 from datetime import datetime
 from queue import Queue
+from time import sleep
 
 class MonitorMovement:
     ### Initializes the components of this class
@@ -14,6 +15,7 @@ class MonitorMovement:
     def monitorMovement(self):
         while True:
             print(f"return from getData: {self.readSensorData(0)}")
+            sleep(1)
 
     
     ### Gets the latest output from the sensor (In datetime)
