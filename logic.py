@@ -32,6 +32,7 @@ class MonitorMovement:
                 self.lightWrite(0, True)
             else:
                 self.lightWrite(0, False)
+            self.epoch_time = reading
             sleep(1)
 
 
