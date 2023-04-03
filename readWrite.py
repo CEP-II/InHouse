@@ -24,12 +24,14 @@ class SensorRead:
     
     # on_message put time signatures into the queue
     def on_message(client, userdata, msg, self):
+        if msg is None or msg.payload is None:
+            return
         now = datetime.now()
         message = json.loads(msg.payload)
         print(message["illuminance"])
         self.sensorVal = now
         self.q.put(now)
-        #return now
+        return now
     
     ### The getData returns the latest time sensor was activated
     def getData(self):
