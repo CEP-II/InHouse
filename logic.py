@@ -14,13 +14,12 @@ class MonitorMovement:
         self.epoch_time = datetime.now()
 
     ### Will return the time from last time
-    def delta(self, now):
-        delta = (now - self.epoch_time)
+    def delta(then, now):
+        delta = (now - then)
         return int(delta.total_seconds())
 
     ### Logic for when and which lights to turn on
     def monitorMovement(self):
-        delta = 0                   # Time since last reading
         self.lightWrite(0, False)
 
         while True:
@@ -30,8 +29,10 @@ class MonitorMovement:
             if not type(reading) == type(self.epoch_time):
                 continue
 
-            print(f"Time since Reading: {self.delta(reading)}")
-            if self.delta(reading) < 10:
+
+
+            print(f"Time since Reading: {self.delta(reading, datetime.now())}")
+            if self.delta(reading, datetime.now()) < 10:
                 self.epoch_time = reading
                 self.lightWrite(0, True)
             else:
