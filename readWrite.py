@@ -8,7 +8,7 @@ from datetime import datetime
 
 class SensorRead:
     ### Initializes name and value
-    def __init__(self, name, ID, client, userdata, msg):
+    def __init__(self, name, ID):
         self.name = name        # individual name of each sensor
         self.val = ID          # ID for each sensor 
         self.sensorVal = datetime.now()      # Time stamp to pass
