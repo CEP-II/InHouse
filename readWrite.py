@@ -68,7 +68,7 @@ class LightController:
         broker_out_on = {"color":{"r":255,"g":255,"b":255}}
         self.data_out_on = json.dumps(broker_out_on)
 
-        broker_out_off = {"color":{"r":0,"g":0,"b":0}}
+        broker_out_off = {"state":"OFF"}
         self.data_out_off = json.dumps(broker_out_off)
 
     ### Turns on the light
