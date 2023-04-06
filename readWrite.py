@@ -65,7 +65,7 @@ class LightController:
         self.client.connect(broker_address, broker_port)
 
         #ID's to pass for on and off
-        broker_out_on = {"color":{"r":255,"g":255,"b":255}}
+        broker_out_on = {"state":"OFF","color":{"r":255,"g":255,"b":255}}
         self.data_out_on = json.dumps(broker_out_on)
 
         broker_out_off = {"state":"OFF"}
