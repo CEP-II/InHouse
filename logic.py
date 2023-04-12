@@ -36,6 +36,7 @@ class MonitorMovement:
             delta = self.delta(reading, now)
             print(f"Time since Reading: {delta}")
             if delta > 20:
+                print("alarm")
                 light = self.lights[0]
                 light.alarm()
                 self.terminate()
