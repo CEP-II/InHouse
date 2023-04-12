@@ -35,15 +35,15 @@ class MonitorMovement:
 
             delta = self.delta(reading, now)
             print(f"Time since Reading: {delta}")
-            if delta < 10:
-                self.epoch_time = reading
-                self.lightWrite(0, True)
-            elif delta > 60:
+            if delta > 60:
                 for i in self.lights:
                     light = self.lights[i]
                     light.alarm()
                 self.terminate()
                 break
+            elif delta < 10:
+                self.epoch_time = reading
+                self.lightWrite(0, True)
             else:
                 self.lightWrite(0, False)
             sleep(1)
