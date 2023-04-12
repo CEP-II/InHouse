@@ -44,7 +44,7 @@ class MonitorMovement:
             elif delta < 10:
                 self.epoch_time = reading
                 self.lightWrite(0, True)
-            else:
+            else: 
                 self.lightWrite(0, False)
             sleep(1)
 
