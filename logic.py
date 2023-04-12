@@ -13,6 +13,8 @@ class MonitorMovement:
 
         self.epoch_time = datetime.now()
 
+
+
     ### Will return the time from last time
     def delta(self, t1, t2):
         delta = (t2 - t1)
@@ -36,13 +38,19 @@ class MonitorMovement:
             if delta < 10:
                 self.epoch_time = reading
                 self.lightWrite(0, True)
+            elif delta > 60:
+                for i in self.lights:
+                    light = self.lights[i]
+                    light.alarm()
+                self.terminate()
+                break
             else:
                 self.lightWrite(0, False)
             sleep(1)
 
-
-
-
+    def monitorMovementV2(self):
+        while True:
+            return
 
     
     ### Gets the latest output from the sensor (In datetime)
@@ -73,4 +81,8 @@ class MonitorMovement:
         if not state:
             light.turnOff()
 
-
+    def terminate(self):
+        for i in self.lights:
+            self.lights[i].terminate()
+        for i in self.sensors:
+            self.sensors[i].terminate()

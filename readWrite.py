@@ -8,42 +8,34 @@ from datetime import datetime
 
 class SensorRead:
     ### Initializes name and value
-    def __init__(self, name, ID):
-        self.name = name        # individual name of each sensor
-        self.val = ID          # ID for each sensor 
-        self.sensorVal = datetime.now()      # Time stamp to pass
-        self.q = Queue()        # Queues are thread-safe 
+    def __init__(self, name):
+        self.name = name                    # individual name of each sensor
+        self.sensorVal = datetime.now()     # Time stamp to pass
+        self.queue = Queue()                    # Queues to push the sensor data into 
 
         ## Logic to start the loop of threads
-        client = mqtt.Client()
-        client.on_message = self.on_message
-        self.sensorVal = client.on_message
-        client.connect("localhost", 1883)
-        client.subscribe(self.name) #"zigbee2mqtt/0x00158d000572a63f"
-        client.loop_start()
+        client = mqtt.Client()              # Initializes the mqtt client
+        client.on_message = self.on_message # calls the on_message function, when sensor detects motion
+        self.sensorVal = client.on_message  # sensorval gets updated on message
+        client.connect("localhost", 1883)   # connects the client
+        client.subscribe(self.name)         # connects to the passed name (sensors firnedly name) "zigbee2mqtt/0x00158d000572a63f"
+        client.loop_start()                 # Initialises the loop (Important to stop the loop when finished)
     
-    # on_message put time signatures into the queue
+    ### on_message put time signatures into the queue, is called everytime sensor motion is detected
     def on_message(self, client, userdata, msg):
-        """
-        if msg is None or msg.payload is None:
-            return
-        now = datetime.now()
-        message = json.loads(msg.payload)
-        print(message["illuminance"])
-        self.sensorVal = now
-        self.q.put(now)
-        return now
-        """
-        print("Message recieved")
-        now = datetime.now()
-        self.q.put(now)
+        payload = msg.payload.decode('utf-8')
+        # data = json.loads(payload)
+        if "illuminance" in payload:# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
+            print("Message recieved")           # prints to console
+            now = datetime.now()                
+            self.queue.put(now)                     # put the time of the sensor reading into the queue
     
-    ### The getData returns the latest time sensor was activated
+    ### The getData returns the latest time stamp that the sensor was activated
     def getData(self):
-        while not self.q.empty():       #will run through untill the most recent input of the queue
-            self.sensorVal = self.q.get()
+        while not self.queue.empty():           # will run through untill the most recent input of the queue
+            self.sensorVal = self.queue.get()   # updates sensorval
         
-        return self.sensorVal
+        return self.sensorVal               # return the latest time 
 
     ### Terminates the loops on each thread
     def terminate(client, userdata, rc=0):
@@ -55,9 +47,8 @@ class SensorRead:
 
 class LightController:
     ### Initializes the connection to the light component
-    def __init__(self, name, ID):
+    def __init__(self, name):
         self.name = name
-        self.ID = ID
 
         broker_address = "localhost"
         broker_port = 1883
@@ -65,16 +56,19 @@ class LightController:
         self.client.connect(broker_address, broker_port)
 
         #ID's to pass for on and off
-        broker_out_on = {"state":"OFF","color":{"r":255,"g":255,"b":255}}
+        broker_out_on = {"state":"ON","color":{"r":255,"g":255,"b":255}}
         self.data_out_on = json.dumps(broker_out_on)
 
         broker_out_off = {"state":"OFF"}
         self.data_out_off = json.dumps(broker_out_off)
 
+        data_alarm = {"state": "ON", "color":{"r":255,"g":0,"b":0}}
+        self.data_alarm = json.dumps(data_alarm)
+
     ### Turns on the light
     def turnOn(self):
         print("Turn On")
-        message = self.data_out_on          # Message to turn on
+        message = self.data_out_on               # Message to turn on
         self.client.publish(self.name, message)  # Publishes to self.name aka topic
 
     ### Turns off the light
@@ -82,6 +76,11 @@ class LightController:
         print("Turn Off")
         message = self.data_out_off          # Message to turn off
         self.client.publish(self.name, message)   # Publishes to self.name aka topic
+
+    def alarm(self):
+        print("Alarm")
+        message = self.data_alarm
+        self.client.publish(self.name, message)
     
     ### Terminates the connection
     def terminate(self, client):
