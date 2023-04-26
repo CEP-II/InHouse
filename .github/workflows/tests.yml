@@ -25,5 +25,4 @@ jobs:
        python -m pip install paho-mqtt
    
     - name: Test with tox
-      run: | 
-      tox
+      run: tox
