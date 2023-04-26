@@ -25,9 +25,9 @@ jobs:
     - name: Install curl
       run: |
          apt-get update; apt-get install -y curl
-     - name: Run curl
-       run: |
+    - name: Run curl
+      run: |
          curl http://localhost:1883
-   
+  
     - name: Test with tox
       run: tox
