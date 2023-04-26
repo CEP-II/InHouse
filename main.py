@@ -1,6 +1,6 @@
-from readWrite import SensorRead
-from readWrite import LightController
-from logic import MonitorMovement
+from src.nightguard.readWrite import SensorRead
+from src.nightguard.readWrite import LightController
+from src.nightguard.logic import MonitorMovement
 
 from time import sleep
 

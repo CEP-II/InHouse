@@ -3,6 +3,7 @@ from datetime import datetime
 from queue import Queue
 from time import sleep
 
+
 class MonitorMovement:
     ### Initializes the components of this class
     def __init__(self, sensors, lights):
