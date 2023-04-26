@@ -20,14 +20,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-       sudo apt update && sudo apt upgrade -y
-       sudo apt-get install mosquitto
-       sudo systemctl start mosquitto
-       echo "allow_anonymous true" >> /etc/mosquitto/mosquitto.conf
-       echo "listener 1883" >> /etc/mosquitto/mosquitto.conf
        python -m pip install --upgrade pip
        python -m pip install tox tox-gh-actions
-     
+    - name: Install curl
+      run: |
+         apt-get update; apt-get install -y curl
+     - name: Run curl
+       run: |
+         curl http://localhost:1883
    
     - name: Test with tox
       run: tox
