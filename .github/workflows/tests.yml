@@ -24,7 +24,7 @@ jobs:
        python -m pip install tox tox-gh-actions
     - name: Install curl
       run: |
-         apt-get update; apt-get install -y curl
+        sudo apt-get update; sudo apt-get install -y curl
     - name: Run curl
       run: |
          curl http://localhost:1883
