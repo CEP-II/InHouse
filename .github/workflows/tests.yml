@@ -20,6 +20,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+       sudo apt update && sudo apt upgrade -y
        sudo apt-get install mosquitto
        sudo systemctl start mosquitto
        echo "allow_anonymous true" >> /etc/mosquitto/mosquitto.conf
