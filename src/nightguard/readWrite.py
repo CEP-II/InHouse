@@ -8,7 +8,7 @@ from datetime import datetime
 
 class SensorRead:
     ### Initializes name and value
-    def __init__(self, name, ID):
+    def __init__(self, name, ID, broker_address:str=None):
         self.name = name        # individual name of each sensor
         self.val = ID          # ID for each sensor 
         self.sensorVal = datetime.now()      # Time stamp to pass
@@ -18,7 +18,7 @@ class SensorRead:
         client = mqtt.Client()
         client.on_message = self.on_message
         self.sensorVal = client.on_message
-        client.connect("localhost", 1883)
+        client.connect(broker_address, 1883)
         client.subscribe(self.name) #"zigbee2mqtt/0x00158d000572a63f"
         client.loop_start()
     
@@ -55,14 +55,13 @@ class SensorRead:
 
 class LightController:
     ### Initializes the connection to the light component
-    def __init__(self, name, ID):
+    def __init__(self, name, ID, broker_address:str=None):
         self.name = name
         self.ID = ID
 
-        broker_address = "localhost"
         broker_port = 1883
         self.client = mqtt.Client()
-        self.client.connect(broker_address, broker_port)
+        self.client.connect(broker_address , broker_port)
 
         #ID's to pass for on and off
         broker_out_on = {"state":"OFF","color":{"r":255,"g":255,"b":255}}
