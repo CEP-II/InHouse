@@ -20,9 +20,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip3 install --upgrade pip
-        pip3 install tox tox-gh-actions
+        pip install --upgrade pip
+        pip install tox tox-gh-actions
    
     - name: Test with tox
-      run: 
-      tox
+      run: tox
