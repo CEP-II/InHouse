@@ -18,7 +18,7 @@ class SensorRead:
         client = mqtt.Client()
         client.on_message = self.on_message
         self.sensorVal = client.on_message
-        client.connect(broker_address, 1883)
+        client.connect(broker_address, 15963)
         client.subscribe(self.name) #"zigbee2mqtt/0x00158d000572a63f"
         client.loop_start()
     
@@ -59,7 +59,7 @@ class LightController:
         self.name = name
         self.ID = ID
 
-        broker_port = 1883
+        broker_port = 15963
         self.client = mqtt.Client()
         self.client.connect(broker_address , broker_port)
 

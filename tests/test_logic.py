@@ -14,12 +14,12 @@ import logging
 
 
 
-sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f", 0, "test.mosquitto.org")
+sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f", 0, "0.tcp.eu.ngrok.io")
 
 sensors = []
 sensors.append(sensor_1)
 
-led_1 = LightController("zigbee2mqtt/0xbc33acfffe8b8d7c/set", 0,"test.mosquitto.org")
+led_1 = LightController("zigbee2mqtt/0xbc33acfffe8b8d7c/set", 0,"0.tcp.eu.ngrok.io")
 led_1.turnOff()
 lights = []
 lights.append(led_1)
