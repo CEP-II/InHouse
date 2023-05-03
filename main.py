@@ -3,7 +3,22 @@ from readWrite import LightController
 from logic import MonitorMovement
 from datetime import datetime
 
+import time
 from time import sleep
+
+
+
+# Checks if the first sensor / bedroom sensor is the most recent activated
+def mostRecent():
+    if len(sensors) == 0:
+        return -1
+    smallest_value = sensors[0]
+    smallest_index = 0
+    for i in range(1, len(sensors)):
+        if sensors[i] < smallest_value:
+            smallest_value = sensors[i]
+            smallest_index = i
+    return smallest_index
 
 sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f")
 
@@ -18,32 +33,37 @@ lights.append(led_1)
 monitor = MonitorMovement(sensors, lights)
 monitor.monitorMovement()
 
-
-
-print("Hello World!")
-
+"""
 start_time = datetime.time(23, 0)
 end_time = datetime.time(7, 0)
-"""
-# Checks if the first sensor is the most recent activated
-def isMostRecent():
-    is_recent = True
-    for i in range(1, len(sensors)):
-        if sensors[i] < sensors[0]:
-            is_recent = False
-            break
-    return is_recent
 
+
+monitor_state = False
 def main():
     while True:
-        if datetime.now() >= start_time and datetime.now() <= end_time:
-            if isMostRecent():
+        if not monitor_state: #If the monitor state is off it should run
+            #Will check if we are in the correct time frame
+            if datetime.now() >= start_time and datetime.now() <= end_time:
+                #Will then check if the last activated sensor is from the bedroom
+                if mostRecent() == 0:
+                    monitor_state = True
+                    pass
+
+            time.sleep(60) # Will only check every 60 seconds
+
+        elif datetime.now() > end_time:
+            monitor_state = False #If the time exceeds 7 am it will turn off the monitoring
+
+        else:
+            monitor.monitorMovement()
                 
-                pass
+            
+            
 
         
 
 
 if __name__ == "__main__":
     main()
+
 """

@@ -1,5 +1,6 @@
 import threading
 from datetime import datetime
+from serverInterface import Serverwriter
 from queue import Queue
 from time import sleep
 
@@ -12,6 +13,8 @@ class MonitorMovement:
         self.lock = threading.Lock()
 
         self.epoch_time = datetime.now()
+
+        self.server = Serverwriter
 
 
 
@@ -44,6 +47,9 @@ class MonitorMovement:
             elif delta < 10:
                 self.epoch_time = reading
                 self.lightWrite(0, True)
+
+                self.server.sendToServer(self.epoch_time)
+                
             else: 
                 self.lightWrite(0, False)
             sleep(1)
