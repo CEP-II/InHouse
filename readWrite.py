@@ -59,7 +59,7 @@ class Light:
 
 class LightController:
     ### Initializes the connection to the light component
-    def __init__(self, name):
+    def __init__(self):
         # message to pass for on
         broker_out_on = {"state":"ON","color":{"r":255,"g":255,"b":255}}
         self.data_out_on = json.dumps(broker_out_on)

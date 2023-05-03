@@ -48,9 +48,10 @@ class LightMachine(StateMachine):
 
     def on_enter_state(self, event, state):
         print("Entered: " + state.id)
-
+"""
 sm = LightMachine()
 
 sm.trigger_sens1()
 sm.trigger_sens2()
 sm.trigger_sens2()
+"""
