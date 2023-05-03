@@ -1,7 +1,7 @@
 from readWrite import SensorRead
 from readWrite import LightController
 from logic import MonitorMovement
-from datetime import datetime
+import datetime
 
 import time
 from time import sleep
@@ -36,8 +36,9 @@ start_time = datetime.time(23, 0)
 end_time = datetime.time(7, 0)
 
 
-monitor_state = False
+
 def main():
+    monitor_state = False
     while True:
         if not monitor_state: #If the monitor state is off it should run
             #Will check if we are in the correct time frame
