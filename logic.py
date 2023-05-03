@@ -4,18 +4,21 @@ from serverInterface import Serverwriter
 from queue import Queue
 from time import sleep
 
+from stateMachine import LightMachine
+
 class MonitorMovement:
     ### Initializes the components of this class
-    def __init__(self, sensors, lights):
+    def __init__(self, sensors, controller):
         self.monitorState = False
         self.sensors = sensors
-        self.lights = lights
+        self.lc = controller
         self.lock = threading.Lock()
 
         self.epoch_time = datetime.now()
 
         self.server = Serverwriter
 
+        self.lm = LightMachine()
 
 
     ### Will return the time from last time
@@ -25,8 +28,7 @@ class MonitorMovement:
 
     ### Logic for when and which lights to turn on
     def monitorMovement(self):
-        self.lightWrite(0, False)
-
+        controller = self.lc
         while True:
             reading = self.readSensorData(0)    # Time Reading
             now = datetime.now()
@@ -39,25 +41,41 @@ class MonitorMovement:
             delta = self.delta(reading, now)
             print(f"Time since Reading: {delta}")
             if 20 < delta:
-                print("alarm")
-                light = self.lights[0]
-                light.alarm()
-                self.terminate()
-                break
+                controller.alarm(0)
             elif delta < 10:
                 self.epoch_time = reading
-                self.lightWrite(0, True)
+                controller.turnOn(0)
 
                 self.server.sendToServer(self.epoch_time)
                 
             else: 
-                self.lightWrite(0, False)
+                controller.turnOff(0)
             sleep(1)
 
     def monitorMovementV2(self):
         while True:
-            return
+            sm = self.lm
+            if(self.mostRecent() == 0):
+                sm.trigger_bed
+            elif(self.mostRecent() == 1):
+                sm.trigger_sens1
+            elif(self.mostRecent() == 2):
+                sm.trigger_sens2
+            elif(self.mostRecent() == 3):
+                sm.trigger_sens3
+            
+            
 
+    def mostRecent(self):
+        if len(self.sensors) == 0:
+            return -1
+        smallest_value = self.sensors[0]
+        smallest_index = 0
+        for i in range(1, len(self.sensors)):
+            if self.sensors[i] < smallest_value:
+                smallest_value = self.sensors[i]
+                smallest_index = i
+        return smallest_index
     
     ### Gets the latest output from the sensor (In datetime)
     def readSensorData(self, ID):
@@ -75,17 +93,6 @@ class MonitorMovement:
         else:
             monitorState = True
     
-    ### function to turn a specifik light on or off
-    def lightWrite(self, ID, state):
-        light = self.lights[ID]
-
-        # if the state that is passed to the ID is true turn on
-        if state:
-            light.turnOn()
-
-        # if the state passed is false turn of the light 
-        if not state:
-            light.turnOff()
 
     def terminate(self):
         for i in self.lights:

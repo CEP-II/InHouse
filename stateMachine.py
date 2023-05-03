@@ -4,6 +4,7 @@ from readWrite import LightController
 class LightMachine(StateMachine):
     def __init__(self):
         LC = LightController()
+        LC.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set") ### bedroom light
 
     room0 = State(initial=True)
     room1 = State()

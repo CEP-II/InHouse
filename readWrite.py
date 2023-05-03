@@ -44,9 +44,7 @@ class SensorRead:
         client.loop_stop()
 
     
-
-class LightController:
-    ### Initializes the connection to the light component
+class Light:
     def __init__(self, name):
         self.name = name
 
@@ -54,33 +52,50 @@ class LightController:
         broker_port = 1883
         self.client = mqtt.Client()
         self.client.connect(broker_address, broker_port)
+    
+    def publish(self, message):
+        self.client.publish(self.name, message) 
 
-        #ID's to pass for on and off
+
+class LightController:
+    ### Initializes the connection to the light component
+    def __init__(self, name):
+        # message to pass for on
         broker_out_on = {"state":"ON","color":{"r":255,"g":255,"b":255}}
         self.data_out_on = json.dumps(broker_out_on)
 
+        # message to pass for off
         broker_out_off = {"state":"OFF"}
         self.data_out_off = json.dumps(broker_out_off)
 
+        # message to pass for alarm
         data_alarm = {"state": "ON", "color":{"r":255,"g":0,"b":0}}
         self.data_alarm = json.dumps(data_alarm)
 
-    ### Turns on the light
-    def turnOn(self):
+        # array containing the lights
+        self.lights = []
+
+    ### add a new light
+    def add_light(self, adress):
+        light = Light(adress)
+        self.lights.append(light)
+
+    ### Turns on the light with ID; ID
+    def turnOn(self, ID):
         print("Turn On")
         message = self.data_out_on               # Message to turn on
-        self.client.publish(self.name, message)  # Publishes to self.name aka topic
+        self.lights[ID].publish(message)         # turnOn message to the light with ID; ID
 
-    ### Turns off the light
-    def turnOff(self):
+    ### Turns off the ligh with ID; IDt
+    def turnOff(self, ID):
         print("Turn Off")
-        message = self.data_out_off          # Message to turn off
-        self.client.publish(self.name, message)   # Publishes to self.name aka topic
+        message = self.data_out_off                 # Message to turn off
+        self.lights[ID].publish(message)     # Publishes to self.name aka topic
 
-    def alarm(self):
+    def alarm(self, ID):
         print("Alarm")
         message = self.data_alarm
-        self.client.publish(self.name, message)
+        self.lights[ID]( message)
     
     ### Terminates the connection
     def terminate(self, client):
