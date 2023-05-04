@@ -1,7 +1,9 @@
-from src.nightguard.readWrite import SensorRead
-from src.nightguard.readWrite import LightController
-from src.nightguard.logic import MonitorMovement
+from readWrite import SensorRead
+from readWrite import LightController
+from logic import MonitorMovement
+import datetime
 
+import time
 from time import sleep
 
 
@@ -30,32 +32,17 @@ controller.turnOff(0)
 monitor = MonitorMovement(sensors, controller)
 #monitor.monitorMovement()
 
-def get_start_time():
-    today = datetime.today()
-    start = time(17,29,0)
-    start_time = datetime.combine(today,start)
-    return start_time
+start_time = datetime.time(23, 0)
+end_time = datetime.time(7, 0)
 
-def get_end_time():
-    tomorrow = datetime.today() + timedelta(days = 1)
-    end = time(7,0,0)
-    end_time = datetime.combine(tomorrow,end)
-    #Return for testing purposes
-    end_time = get_start_time() + timedelta(minutes=10)
-    return  end_time
+
 
 def main():
     monitor_state = False
-    start_time = get_start_time()
-    end_time = get_end_time()
-    print(start_time)
-    print(end_time)
-
     while True:
         if not monitor_state: #If the monitor state is off it should run
             #Will check if we are in the correct time frame
             print("Checks to see if time is right")
-            print(datetime.now())
             if datetime.now() >= start_time and datetime.now() <= end_time:
                 #Will then check if the last activated sensor is from the bedroom
                 print("timeframe right")
@@ -65,8 +52,8 @@ def main():
                     monitor_state = True
 
                     pass
-            print("Time out of bounds, sleep 10")
-            sleep(10) # Will only check every 60 seconds
+            print("Time out of bounds, sleep 60")
+            time.sleep(60) # Will only check every 60 seconds
 
         elif datetime.now() > end_time:
             print("Past end-time")
