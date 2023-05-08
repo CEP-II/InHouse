@@ -100,3 +100,6 @@ class LightController:
     ### Terminates the connection
     def terminate(self, client):
         client.disconnect()                 # Disconnects the client
+    
+    def lights_size(self):
+        return len(self.lights)
