@@ -2,8 +2,10 @@ from readWrite import SensorRead
 from readWrite import LightController
 from logic import MonitorMovement
 from datetime import date, datetime, time, timedelta
+from serverInterface import Serverwriter
 
 from time import sleep
+server = Serverwriter()
 
 
 
@@ -20,12 +22,15 @@ def mostRecent():
     return smallest_index
 
 sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f")
+sensor_2 = SensorRead("zigbee2mqtt/0x00158d00054a6fcb")
 
 sensors = []
 sensors.append(sensor_1)
+sensors.append(sensor_2)
 
 controller = LightController()
 controller.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set")
+controller.add_light("zigbee2mqtt/0x680ae2fffebe8c38/set")
 controller.turnOff(0)
 
 monitor = MonitorMovement(sensors, controller)
@@ -33,7 +38,7 @@ monitor = MonitorMovement(sensors, controller)
 
 def get_start_time():
     today = datetime.today()
-    start = time(17,29,0)
+    start = time(15,50,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -72,10 +77,14 @@ def main():
         elif datetime.now() > end_time:
             print("Past end-time")
             monitor_state = False #If the time exceeds 7 am it will turn off the monitoring
+            start_time = get_start_time()
+            end_time = get_end_time()
 
         else:
             #monitor.monitorMovement()
             print("monitoring")
+            server.sendToServer({1:'Hello World'})
+            sleep(10)
                 
             
             

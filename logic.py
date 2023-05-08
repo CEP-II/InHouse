@@ -18,7 +18,7 @@ class MonitorMovement:
 
         self.server = Serverwriter
 
-        self.lm = LightMachine()
+        self.lm = LightMachine(self.lc)
 
 
     ### Will return the time from last time
