@@ -5,40 +5,47 @@ from datetime import date, datetime, time, timedelta
 from serverInterface import Serverwriter
 
 from time import sleep
-server = Serverwriter()
+
+
+#server = Serverwriter()
 
 
 
 # returns the index of the most recent active sensor
-def mostRecent():
+def mostRecent(sensors):
+    #precondition is that there are at least 1 sensor in the array
     if len(sensors) == 0:
         return -1
-    smallest_value = sensors[0]
-    smallest_index = 0
+    
+    sensor = sensors[0]
+    
+    # if the sensors hasn't had time to update fully it won't have the right type
+    # this if statements assures that, and otherwise it will return -1
+    if not type(sensor.getData()) == type(datetime):
+        smallest_value = datetime(1970, 1, 1)
+        smallest_index = -1
+    else:
+        smallest_value = sensor.getData()
+        smallest_index = 0
+       
     for i in range(1, len(sensors)):
-        if sensors[i] < smallest_value:
-            smallest_value = sensors[i]
+        sensor = sensors[i]
+
+        if not type(sensor.getData()) == type(datetime):
+            continue 
+        
+        if sensor.getData() < smallest_value:
+            smallest_value = sensor.getData()
             smallest_index = i
+
     return smallest_index
 
-sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f")
-sensor_2 = SensorRead("zigbee2mqtt/0x00158d00054a6fcb")
 
-sensors = []
-sensors.append(sensor_1)
-sensors.append(sensor_2)
-
-controller = LightController()
-controller.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set")
-controller.add_light("zigbee2mqtt/0x680ae2fffebe8c38/set")
-controller.turnOff(0)
-
-monitor = MonitorMovement(sensors, controller)
 #monitor.monitorMovement()
 
 def get_start_time():
     today = datetime.today()
-    start = time(15,50,0)
+    start = time(20,11,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -47,16 +54,30 @@ def get_end_time():
     end = time(7,0,0)
     end_time = datetime.combine(tomorrow,end)
     #Return for testing purposes
-    end_time = get_start_time() + timedelta(minutes=10)
+    end_time = get_start_time() + timedelta(minutes=80)
     return  end_time
 
 def main():
+    sensors = []
+    sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f")
+    sensor_2 = SensorRead("zigbee2mqtt/0x00158d00054a6fcb")
+    sensors.append(sensor_1)
+    sensors.append(sensor_2)
+
+    controller = LightController()
+    controller.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set")
+    controller.add_light("zigbee2mqtt/0x680ae2fffebe8c38/set")
+
+    controller.turnOff(0)
+    controller.turnOff(1)
+
+    monitor = MonitorMovement(sensors, controller)
+
     monitor_state = False
     start_time = get_start_time()
     end_time = get_end_time()
-    print(start_time)
-    print(end_time)
-
+    
+    # Loop that will always run
     while True:
         if not monitor_state: #If the monitor state is off it should run
             #Will check if we are in the correct time frame
@@ -65,14 +86,15 @@ def main():
             if datetime.now() >= start_time and datetime.now() <= end_time:
                 #Will then check if the last activated sensor is from the bedroom
                 print("timeframe right")
-                if mostRecent() == 0:
+                if mostRecent(sensors) == 0:
                     print("bedroom is most recent sensor")
                     print("monitor state = true")
                     monitor_state = True
 
                     pass
-            print("Time out of bounds, sleep 10")
-            sleep(10) # Will only check every 60 seconds
+            else:
+                print("Time out of bounds, sleep 10")
+                sleep(10) # Will only check every 60 seconds
 
         elif datetime.now() > end_time:
             print("Past end-time")
@@ -83,7 +105,8 @@ def main():
         else:
             #monitor.monitorMovement()
             print("monitoring")
-            server.sendToServer({1:'Hello World'})
+            monitor.monitorMovementV2()
+            #server.sendToServer({1:'Hello World'})
             sleep(10)
                 
             

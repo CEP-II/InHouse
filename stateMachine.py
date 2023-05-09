@@ -6,6 +6,7 @@ class LightMachine(StateMachine):
         super().__init__()
         self.LC = controller
         self.LC.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set") ### bedroom light
+        self.controller = controller
 
     bed = State(initial=True)
     room1 = State()
@@ -26,22 +27,25 @@ class LightMachine(StateMachine):
     def on_exit_state(self, event, state):
         print("Exiting " + state.id)
         if state.id == 'bed':
-            print("Turn on room1")
-            controller.turnOn(0)
-            print("Turn on room2")
-            controller.turnOff(1)
             print("Turn off bed")
+            print("Turn off room1")
+            self.controller.turnOff(0)
+            print("Turn off room2")
+            self.controller.turnOff(1)
+            print("Turn off room_bath")
+
+        
 
         if state.id == 'room1':
             if event == "trigger_sens2":
                 print("Turn on room2")
-                controller.turnOff(0)
                 print("Turn on room_bath")
-                controller.turnOn(1)
                 print("Turn off room1")
             elif event == "trigger_sens1":
                 print("Turn on bed")
+                self.controller.turnOn(0)
                 print("Turn off room1")
+                self.controller.turnOff(1)
         
         if state.id == 'room2':
             if event == "trigger_sens3":
@@ -61,10 +65,9 @@ controller = LightController()
 controller.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set")
 controller.turnOff(0)
 
+print("Hello")
 sm = LightMachine(controller)
 sm.trigger_bed()
 sm.trigger_sens1()
-sm.trigger_sens2()
-sm.trigger_sens2()
 sm.trigger_sens1()
-sm.trigger_bed()
+sm.trigger_sens1()

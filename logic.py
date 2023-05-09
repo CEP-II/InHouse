@@ -12,7 +12,10 @@ class MonitorMovement:
         self.monitorState = False
         self.sensors = sensors
         self.lc = controller
-        self.lock = threading.Lock()
+
+        self.activeState = False
+        self.thread = None
+
 
         self.epoch_time = datetime.now()
 
@@ -52,34 +55,60 @@ class MonitorMovement:
                 controller.turnOff(0)
             sleep(1)
 
+    def activate(self):
+        self.activeState = True
+        self.thread = threading.Thread(target=self.monitorMovementV2)
+        self.thread.start()
+
+    def deactivate(self):
+        self.activeState = False
+        self.thread.join()
+
     def monitorMovementV2(self):
-        while True:
-            sm = self.lm
-            if(self.mostRecent() == 0):
-                sm.trigger_bed
-            elif(self.mostRecent() == 1):
-                sm.trigger_sens1
-            elif(self.mostRecent() == 2):
-                sm.trigger_sens2
-            elif(self.mostRecent() == 3):
-                sm.trigger_sens3
+        while True: #self.activeState
+            latest = self.mostRecent()
+            print(latest)
+            
+            # should run if latest sensor is different from the previous sensor or the time since reading is over 2 sek
+            if (not (latest == prev) or self.delta(self.readSensorData(latest) > 2)): 
+                if(latest == 0):
+                    print("should trigger bed")
+                    self.lm.trigger_bed()
+                elif(latest == 1):
+                    self.lm.trigger_sens1()
+                elif(latest == 2):
+                    self.lm.trigger_sens2()
+                elif(latest == 3):
+                    self.lm.trigger_sens3()
+
+            elif (not (latest == 0) and self.delta(self.readSensorData(latest) > 20)):
+                self.lm.trigger_alarm()
+                  
+            prev = latest
+            sleep(1)
             
             
 
     def mostRecent(self):
-        if len(self.sensors) == 0:
+        reading = self.readSensorData(0)
+        if not type(reading) == type(self.epoch_time):
             return -1
-        smallest_value = self.sensors[0]
+        smallest_value = reading
         smallest_index = 0
-        for i in range(1, len(self.sensors)):
-            if self.sensors[i] < smallest_value:
-                smallest_value = self.sensors[i]
+        
+        for i in range(len(self.sensors)):
+            if not type(reading) == type(self.epoch_time):
+                continue    
+            if self.delta(self.readSensorData(i), smallest_value) < 0:
+                smallest_value = self.readSensorData(i)
                 smallest_index = i
         return smallest_index
     
     ### Gets the latest output from the sensor (In datetime)
     def readSensorData(self, ID):
         sensor = self.sensors[ID]
+        if not type(sensor.getData()) == type(self.epoch_time):
+                return datetime(1970, 1, 1)    
         return sensor.getData()
                 
 
@@ -99,3 +128,4 @@ class MonitorMovement:
             self.lights[i].terminate()
         for i in self.sensors:
             self.sensors[i].terminate()
+
