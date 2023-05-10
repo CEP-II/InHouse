@@ -18,10 +18,12 @@ def mostRecent(sensors):
         return -1
     
     sensor = sensors[0]
+    print(type(sensor.getData()))
+    print(type(get_start_time()))
     
     # if the sensors hasn't had time to update fully it won't have the right type
     # this if statements assures that, and otherwise it will return -1
-    if not type(sensor.getData()) == type(datetime):
+    if not type(sensor.getData()) == type(get_start_time()):
         smallest_value = datetime(1970, 1, 1)
         smallest_index = -1
     else:
@@ -31,7 +33,7 @@ def mostRecent(sensors):
     for i in range(1, len(sensors)):
         sensor = sensors[i]
 
-        if not type(sensor.getData()) == type(datetime):
+        if not type(sensor.getData()) == type(get_start_time()):
             continue 
         
         if sensor.getData() < smallest_value:
@@ -41,11 +43,10 @@ def mostRecent(sensors):
     return smallest_index
 
 
-#monitor.monitorMovement()
 
 def get_start_time():
     today = datetime.today()
-    start = time(20,11,0)
+    start = time(17,48,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -79,26 +80,30 @@ def main():
     
     # Loop that will always run
     while True:
-        if not monitor_state: #If the monitor state is off it should run
+        if not  monitor.activeState: #monitor_state: #If the monitor state is off it should run
             #Will check if we are in the correct time frame
-            print("Checks to see if time is right")
-            print(datetime.now())
-            if datetime.now() >= start_time and datetime.now() <= end_time:
-                #Will then check if the last activated sensor is from the bedroom
-                print("timeframe right")
-                if mostRecent(sensors) == 0:
-                    print("bedroom is most recent sensor")
+            if mostRecent(sensors) == 0:
+                print("bedroom is most recent sensor")
+                print("Checks to see if time is right")
+                print(datetime.now())
+                if datetime.now() >= start_time and datetime.now() <= end_time:
+                    #Will then check if the last activated sensor is from the bedroom
+                    print("timeframe right")
                     print("monitor state = true")
-                    monitor_state = True
-
+                    #monitor_state = True
+                    monitor.activate()
                     pass
+                else:
+                    print("Time out of bounds, sleep 10")
+                    sleep(10) # Will only check every 60 seconds
             else:
-                print("Time out of bounds, sleep 10")
-                sleep(10) # Will only check every 60 seconds
+                print(mostRecent(sensors))
+                sleep(1)
 
         elif datetime.now() > end_time:
             print("Past end-time")
-            monitor_state = False #If the time exceeds 7 am it will turn off the monitoring
+            #monitor_state = False #If the time exceeds 7 am it will turn off the monitoring
+            monitor.deactivate()
             start_time = get_start_time()
             end_time = get_end_time()
 

@@ -60,7 +60,7 @@ class LightMachine(StateMachine):
     def on_enter_state(self, event, state):
         print("Entered: " + state.id)
 
-
+"""
 controller = LightController()
 controller.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set")
 controller.turnOff(0)
@@ -71,3 +71,4 @@ sm.trigger_bed()
 sm.trigger_sens1()
 sm.trigger_sens1()
 sm.trigger_sens1()
+"""

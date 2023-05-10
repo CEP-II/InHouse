@@ -67,6 +67,7 @@ class MonitorMovement:
     def monitorMovementV2(self):
         while True: #self.activeState
             latest = self.mostRecent()
+            prev = -1
             print(latest)
             
             # should run if latest sensor is different from the previous sensor or the time since reading is over 2 sek
@@ -81,6 +82,7 @@ class MonitorMovement:
                 elif(latest == 3):
                     self.lm.trigger_sens3()
 
+            #If it has been more than 20 seconds all of the light should turn on
             elif (not (latest == 0) and self.delta(self.readSensorData(latest) > 20)):
                 self.lm.trigger_alarm()
                   
