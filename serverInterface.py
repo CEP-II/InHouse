@@ -1,11 +1,12 @@
 import paho.mqtt.client as mqtt
+from datetime import datetime
 import json
 
 class Serverwriter:
     ### Initializes the connection to the light component
     def __init__(self):
         self.client = mqtt.Client()
-        self.client.connect("2.tcp.eu.ngrok.io", 15915)
+        self.client.connect("0.tcp.eu.ngrok.io", 11252)
 
         #self.serverIP = "127.0.0.1"
 
@@ -25,9 +26,18 @@ class Serverwriter:
         return cpuserial
 
     ### Turns on the light
-    def sendToServer(self, startTime, endTime, positionID):
-        serial = self.getSerial()
-        combined_str = {"deviceId": serial, "startTime": startTime, "endTime": endTime, "positionID": positionID} # {string, datetime, datetime, int}
+    def sendToServer(self, startTime:datetime, endTime:datetime, positionID:int):
+        #serial = self.getSerial()
+        serial = "p1kk3m4nd8008bs6969"
+        combined_str = {"deviceId": serial, "startTime": str(startTime), "endTime": str(endTime), "positionId": positionID} # {string, datetime, datetime, int}
+        self.json_msg = json.dumps(combined_str)
+        print("Sending Data To Server")
+        self.client.publish("database", self.json_msg)  # Publishes to server
+
+    def sendAlarm(self, alarmTime:datetime, positionId:int):
+        #serial = self.getSerial()
+        serial = "p1kk3m4nd8008bs6969"
+        combined_str = {"deviceId": serial, "alarmTime": str(alarmTime), "positionId": positionId} # {string, datetime, datetime, int}
         self.json_msg = json.dumps(combined_str)
         print("Sending Data To Server")
         self.client.publish("database", self.json_msg)  # Publishes to server

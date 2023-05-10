@@ -18,8 +18,8 @@ def mostRecent(sensors):
         return -1
     
     sensor = sensors[0]
-    print(type(sensor.getData()))
-    print(type(get_start_time()))
+    #print(type(sensor.getData()))
+    #print(type(get_start_time()))
     
     # if the sensors hasn't had time to update fully it won't have the right type
     # this if statements assures that, and otherwise it will return -1
@@ -46,7 +46,7 @@ def mostRecent(sensors):
 
 def get_start_time():
     today = datetime.today()
-    start = time(17,48,0)
+    start = time(16,18,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -60,21 +60,44 @@ def get_end_time():
 
 def main():
     sensors = []
-    sensor_1 = SensorRead("zigbee2mqtt/0x00158d000572a63f")
-    sensor_2 = SensorRead("zigbee2mqtt/0x00158d00054a6fcb")
+    sensor_bed = SensorRead("zigbee2mqtt/0x00158d000572a63f")
+    sensor_1 = SensorRead("zigbee2mqtt/0x00158d00054a6fcb")
+    sensor_2 = SensorRead("zigbee2mqtt/0x842e14fffe571021")
+    sensor_3 = SensorRead("zigbee2mqtt/0xbc33acfffe167e53")
+    sensor_bath = SensorRead("zigbee2mqtt/0xbc33acfffe184596")
+
+    sensors.append(sensor_bed)
     sensors.append(sensor_1)
     sensors.append(sensor_2)
-
+    sensors.append(sensor_3)
+    sensors.append(sensor_bath)
+    
     controller = LightController()
     controller.add_light("zigbee2mqtt/0xbc33acfffe8b8d7c/set")
     controller.add_light("zigbee2mqtt/0x680ae2fffebe8c38/set")
+    controller.add_light("zigbee2mqtt/0x680ae2fffec0ccb7/set")
+    controller.add_light("zigbee2mqtt/0xcc86ecfffebfaefc/set")
+    
+    controller.turnOff(0)
+    controller.turnOff(1)
+    controller.turnOff(2)
+    controller.turnOff(3)
+
+    controller.turnOn(0)
+    sleep(1)
+    controller.turnOn(1)
+    sleep(1)
+    controller.turnOn(2)
+    sleep(1)
+    controller.turnOn(3)
 
     controller.turnOff(0)
     controller.turnOff(1)
+    controller.turnOff(2)
+    controller.turnOff(3)
 
     monitor = MonitorMovement(sensors, controller)
 
-    monitor_state = False
     start_time = get_start_time()
     end_time = get_end_time()
     
@@ -108,12 +131,11 @@ def main():
             end_time = get_end_time()
 
         else:
-            #monitor.monitorMovement()
             print("monitoring")
-            monitor.monitorMovementV2()
+            #monitor.monitorMovementV2()
             #server.sendToServer({1:'Hello World'})
-            sleep(10)
-                
+            sleep(60)
+            
             
             
 

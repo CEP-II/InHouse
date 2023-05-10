@@ -9,19 +9,14 @@ from stateMachine import LightMachine
 class MonitorMovement:
     ### Initializes the components of this class
     def __init__(self, sensors, controller):
-        self.monitorState = False
         self.sensors = sensors
         self.lc = controller
+        self.lm = LightMachine(self.lc)
+        self.server = Serverwriter()
 
         self.activeState = False
         self.thread = None
-
-
         self.epoch_time = datetime.now()
-
-        self.server = Serverwriter
-
-        self.lm = LightMachine(self.lc)
 
 
     ### Will return the time from last time
@@ -29,105 +24,76 @@ class MonitorMovement:
         delta = (t2 - t1)
         return int(delta.total_seconds())
 
-    ### Logic for when and which lights to turn on
-    def monitorMovement(self):
-        controller = self.lc
-        while True:
-            reading = self.readSensorData(0)    # Time Reading
-            now = datetime.now()
-
-            # If there's no time return from get_data
-            if not type(reading) == type(self.epoch_time):
-                continue
-
-
-            delta = self.delta(reading, now)
-            print(f"Time since Reading: {delta}")
-            if 20 < delta:
-                controller.alarm(0)
-            elif delta < 10:
-                self.epoch_time = reading
-                controller.turnOn(0)
-
-                self.server.sendToServer(self.epoch_time)
-                
-            else: 
-                controller.turnOff(0)
-            sleep(1)
 
     def activate(self):
         self.activeState = True
         self.thread = threading.Thread(target=self.monitorMovementV2)
         self.thread.start()
 
+
     def deactivate(self):
         self.activeState = False
         self.thread.join()
 
+
     def monitorMovementV2(self):
+        latest = -1
+        prev = -1
+        start_time = -1
+        end_time = -1
+        
         while True: #self.activeState
+            sleep(1)
             latest = self.mostRecent()
-            prev = -1
-            print(latest)
-            
+
             # should run if latest sensor is different from the previous sensor or the time since reading is over 2 sek
-            if (not (latest == prev) or self.delta(self.readSensorData(latest) > 2)): 
+            if (latest != prev or (self.delta(self.readSensorData(latest), datetime.now()) > 60)): 
+                end_time = datetime.now()
+                if end_time != -1 and start_time != -1:
+                    print("sending to server")
+                    self.server.sendToServer(start_time, end_time, prev)
+                    start_time = -1
+                    end_time = -1
+
                 if(latest == 0):
-                    print("should trigger bed")
-                    self.lm.trigger_bed()
+                    self.lm.trigger_sens_bed()
                 elif(latest == 1):
                     self.lm.trigger_sens1()
                 elif(latest == 2):
                     self.lm.trigger_sens2()
                 elif(latest == 3):
                     self.lm.trigger_sens3()
+                elif(latest == 4):
+                    self.lm.trigger_sens4()
 
-            #If it has been more than 20 seconds all of the light should turn on
-            elif (not (latest == 0) and self.delta(self.readSensorData(latest) > 20)):
+                start_time = datetime.now()
+
+            # If it has been more than 5 minutes all of the light should turn on
+            elif (not (latest == 0) and (self.delta(self.readSensorData(latest), datetime.now() )> 20)):
+                self.server.sendAlarm(start_time, latest)
                 self.lm.trigger_alarm()
-                  
+
             prev = latest
-            sleep(1)
-            
-            
 
     def mostRecent(self):
         reading = self.readSensorData(0)
-        if not type(reading) == type(self.epoch_time):
-            return -1
+
         smallest_value = reading
         smallest_index = 0
-        
+
         for i in range(len(self.sensors)):
-            if not type(reading) == type(self.epoch_time):
-                continue    
             if self.delta(self.readSensorData(i), smallest_value) < 0:
                 smallest_value = self.readSensorData(i)
                 smallest_index = i
+
         return smallest_index
     
     ### Gets the latest output from the sensor (In datetime)
     def readSensorData(self, ID):
         sensor = self.sensors[ID]
+
         if not type(sensor.getData()) == type(self.epoch_time):
                 return datetime(1970, 1, 1)    
+        
         return sensor.getData()
                 
-
-    def sendData():
-        x = 0
-    
-    ###  Changes monitorState to the opposite
-    def stateMonitoring():
-        if(monitorState):
-            monitorState = False
-        else:
-            monitorState = True
-    
-
-    def terminate(self):
-        for i in self.lights:
-            self.lights[i].terminate()
-        for i in self.sensors:
-            self.sensors[i].terminate()
-

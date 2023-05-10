@@ -25,7 +25,7 @@ class SensorRead:
     def on_message(self, client, userdata, msg):
         payload = msg.payload.decode('utf-8')
         # data = json.loads(payload)
-        if "illuminance" in payload:# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
+        if True: #("illuminance" in payload  or "occupancy" in payload):# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
             print("Message recieved")           # prints to console
             now = datetime.now()                
             self.queue.put(now)                     # put the time of the sensor reading into the queue
@@ -52,9 +52,17 @@ class Light:
         broker_port = 1883
         self.client = mqtt.Client()
         self.client.connect(broker_address, broker_port)
+
+        self.state = False
     
     def publish(self, message):
         self.client.publish(self.name, message) 
+    
+    def get_state(self):
+        return self.state
+    
+    def set_state(self, s: bool):
+        self.state = s
 
 
 class LightController:
@@ -82,21 +90,32 @@ class LightController:
 
     ### Turns on the light with ID; ID
     def turnOn(self, ID):
-        print("Turn On")
+        self.lights[ID].set_state(True)
         message = self.data_out_on               # Message to turn on
         self.lights[ID].publish(message)         # turnOn message to the light with ID; ID
+        
 
     ### Turns off the ligh with ID; IDt
     def turnOff(self, ID):
-        print("Turn Off")
+        self.lights[ID].set_state(False)
+        #print("Turn Off")
         message = self.data_out_off                 # Message to turn off
         self.lights[ID].publish(message)     # Publishes to self.name aka topic
 
-    def alarm(self, ID):
-        print("Alarm")
-        message = self.data_alarm
-        self.lights[ID]( message)
+    def alarm(self):
+        #print("Alarm")
+        for light in self.lights:
+            light.set_state(True)
+            message = self.data_alarm
+            light.publish(message)
     
     ### Terminates the connection
     def terminate(self, client):
         client.disconnect()                 # Disconnects the client
+
+    def activeLights(self):
+        active = []
+        for index, light in enumerate(self.lights):
+            if light.get_state() == True:
+                active.append(index)
+        return active
