@@ -11,30 +11,32 @@ class SensorRead:
     def __init__(self, name):
         self.name = name                    # individual name of each sensor
         self.sensorVal = datetime.now()     # Time stamp to pass
-        self.queue = Queue()                    # Queues to push the sensor data into 
+        self.queue = Queue()                # Queues to push the sensor data into 
+        self.new_message = False            # boolean to keep track wether or not there's a new message
 
-        ## Logic to start the loop of threads
-        client = mqtt.Client()              # Initializes the mqtt client
-        client.on_message = self.on_message # calls the on_message function, when sensor detects motion
-        self.sensorVal = client.on_message  # sensorval gets updated on message
-        client.connect("localhost", 1883)   # connects the client
-        client.subscribe(self.name)         # connects to the passed name (sensors firnedly name) "zigbee2mqtt/0x00158d000572a63f"
-        client.loop_start()                 # Initialises the loop (Important to stop the loop when finished)
+        # ## Logic to start the loop of threads
+        # client = mqtt.Client()              # Initializes the mqtt client
+        # client.on_message = self.on_message # calls the on_message function, when sensor detects motion
+        # self.sensorVal = client.on_message  # sensorval gets updated on message
+        # client.connect("localhost", 1883)   # connects the client
+        # client.subscribe(self.name)         # connects to the passed name (sensors firnedly name) "zigbee2mqtt/0x00158d000572a63f"
+        # client.loop_start()                 # Initialises the loop (Important to stop the loop when finished)
     
-    ### on_message put time signatures into the queue, is called everytime sensor motion is detected
-    def on_message(self, client, userdata, msg):
-        payload = msg.payload.decode('utf-8')
-        # data = json.loads(payload)
-        if True: #("illuminance" in payload  or "occupancy" in payload):# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
-            print("Message recieved")           # prints to console
-            now = datetime.now()                
-            self.queue.put(now)                     # put the time of the sensor reading into the queue
+    # ### on_message put time signatures into the queue, is called everytime sensor motion is detected
+    # def on_message(self, client, userdata, msg):
+    #     payload = msg.payload.decode('utf-8')
+    #     # data = json.loads(payload)
+    #     if True: #("illuminance" in payload  or "occupancy" in payload):# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
+    #         print("Message recieved")           # prints to console
+    #         self.new_message = True
+    #         now = datetime.now()                
+    #         self.queue.put(now)                     # put the time of the sensor reading into the queue
     
     ### The getData returns the latest time stamp that the sensor was activated
     def getData(self):
         while not self.queue.empty():           # will run through untill the most recent input of the queue
             self.sensorVal = self.queue.get()   # updates sensorval
-        
+        self.new_message = False
         return self.sensorVal               # return the latest time 
 
     ### Terminates the loops on each thread
@@ -42,6 +44,13 @@ class SensorRead:
         logging.debug("DisConnected result code "+str(rc))
         ### Terminates the thread
         client.loop_stop()
+
+    ### Function to manipulate a sensor reading for testing
+    def manipulate_sensor_reading(self):
+        print("Message recieved")           # prints to console
+        self.new_message = True
+        now = datetime.now()                
+        self.queue.put(now)
 
     
 class Light:
@@ -119,3 +128,11 @@ class LightController:
             if light.get_state() == True:
                 active.append(index)
         return active
+    
+
+
+# sensor = SensorRead("test")
+# sensor.manipulate_sensor_reading()
+# print(sensor.new_message)
+# print(sensor.getData())
+# print(sensor.new_message)

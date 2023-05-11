@@ -44,13 +44,45 @@ class MonitorMovement:
         
         while True: #self.activeState
             sleep(1)
+            # for index, sensor in enumerate(self.sensors):
+            #     if sensor.new_message:
+
+            #         print(index)
+            #         end_time = datetime.now()
+
+            #         if start_time != -1:
+            #             self.server.sendToServer(start_time, datetime.now(), index)
+            #             start_time = -1
+
+            #         if(index == 0):
+            #             self.lm.trigger_sens_bed()
+            #         elif(index == 1):
+            #             self.lm.trigger_sens1()
+            #         elif(index == 2):
+            #             self.lm.trigger_sens2()
+            #         elif(index == 3):
+            #             self.lm.trigger_sens3()
+            #         elif(index == 4):
+            #             self.lm.trigger_sens4()
+
+            #         start_time = datetime.now()
+                
+            #     if index != 0 and (self.delta(self.readSensorData(latest), datetime.now() )> 20):
+            #         self.server.sendAlarm(start_time, latest)
+            #         self.lm.alarm()
+
+                    
+
+
+
+            sleep(1)
             latest = self.mostRecent()
 
             # should run if latest sensor is different from the previous sensor or the time since reading is over 2 sek
             if (latest != prev or (self.delta(self.readSensorData(latest), datetime.now()) > 60)): 
                 end_time = datetime.now()
+
                 if end_time != -1 and start_time != -1:
-                    print("sending to server")
                     self.server.sendToServer(start_time, end_time, prev)
                     start_time = -1
                     end_time = -1

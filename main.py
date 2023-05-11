@@ -3,50 +3,11 @@ from readWrite import LightController
 from logic import MonitorMovement
 from datetime import date, datetime, time, timedelta
 from serverInterface import Serverwriter
-
 from time import sleep
-
-
-#server = Serverwriter()
-
-
-
-# returns the index of the most recent active sensor
-def mostRecent(sensors):
-    #precondition is that there are at least 1 sensor in the array
-    if len(sensors) == 0:
-        return -1
-    
-    sensor = sensors[0]
-    #print(type(sensor.getData()))
-    #print(type(get_start_time()))
-    
-    # if the sensors hasn't had time to update fully it won't have the right type
-    # this if statements assures that, and otherwise it will return -1
-    if not type(sensor.getData()) == type(get_start_time()):
-        smallest_value = datetime(1970, 1, 1)
-        smallest_index = -1
-    else:
-        smallest_value = sensor.getData()
-        smallest_index = 0
-       
-    for i in range(1, len(sensors)):
-        sensor = sensors[i]
-
-        if not type(sensor.getData()) == type(get_start_time()):
-            continue 
-        
-        if sensor.getData() < smallest_value:
-            smallest_value = sensor.getData()
-            smallest_index = i
-
-    return smallest_index
-
-
 
 def get_start_time():
     today = datetime.today()
-    start = time(16,18,0)
+    start = time(11,0,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -100,12 +61,13 @@ def main():
 
     start_time = get_start_time()
     end_time = get_end_time()
-    
+
     # Loop that will always run
     while True:
-        if not  monitor.activeState: #monitor_state: #If the monitor state is off it should run
+        sleep(1)
+        if not monitor.activeState: #monitor_state: #If the monitor state is off it should run
             #Will check if we are in the correct time frame
-            if mostRecent(sensors) == 0:
+            if monitor.mostRecent() == 0:
                 print("bedroom is most recent sensor")
                 print("Checks to see if time is right")
                 print(datetime.now())
@@ -120,8 +82,7 @@ def main():
                     print("Time out of bounds, sleep 10")
                     sleep(10) # Will only check every 60 seconds
             else:
-                print(mostRecent(sensors))
-                sleep(1)
+                sleep(2)
 
         elif datetime.now() > end_time:
             print("Past end-time")
@@ -132,6 +93,26 @@ def main():
 
         else:
             print("monitoring")
+            sensor_bed.manipulate_sensor_reading()
+            sleep(5)
+            sensor_1.manipulate_sensor_reading()
+            sleep(5)
+            sensor_2.manipulate_sensor_reading()
+            sleep(5)
+            sensor_3.manipulate_sensor_reading()
+            sleep(5)
+            sensor_bath.manipulate_sensor_reading()
+            sleep(5)
+            sensor_bath.manipulate_sensor_reading()
+            sleep(5)
+            sensor_3.manipulate_sensor_reading()
+            sleep(5)
+            sensor_2.manipulate_sensor_reading()
+            sleep(5)
+            sensor_1.manipulate_sensor_reading()
+            sleep(5)
+            sensor_bed.manipulate_sensor_reading()
+
             #monitor.monitorMovementV2()
             #server.sendToServer({1:'Hello World'})
             sleep(60)
