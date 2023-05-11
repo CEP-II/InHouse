@@ -43,7 +43,7 @@ class MonitorMovement:
         latest = -1
         prev = -1
           
-        while True: #self.activeState
+        while self.activeState: #self.activeState
             sleep(1)
             for index, sensor in enumerate(self.sensors):
                 if sensor.new_message:
@@ -78,7 +78,9 @@ class MonitorMovement:
                     self.lm.trigger_alarm()
                     self.readSensorData(index)
                     alarm = True
-                    break
+                    self.deactivate
+                    return
+
 
                 
 
