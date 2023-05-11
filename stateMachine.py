@@ -3,9 +3,9 @@ from readWrite import LightController
 
 class LightMachine(StateMachine):
     def __init__(self,  controller:LightController):
-        super().__init__()
         self.LC = controller
-        self.prev_state_index = -1
+        self.prev_state_index = -2
+        super().__init__()
 
     bed = State(initial=True)
     room1 = State()
@@ -22,14 +22,7 @@ class LightMachine(StateMachine):
     trigger_sens3 = bed.to(room3) | room1.to(room3) | room2.to(room3) | room3.to(room2) | room_bath.to(room2)
     trigger_sens4 = bed.to(room_bath) | room1.to(room_bath) | room2.to(room_bath) | room3.to(room_bath) | room_bath.to(room3)
 
-    # trigger_sens_bed = bed.to.itself() | room1.to(bed)
-    # trigger_sens1 = bed.to(room1) | room1.to.itself()
-    # trigger_sens2 = room1.to(room2) | room2.to(room1)
-    # trigger_sens3 = room2.to(room3) | room3.to(room2)
-    # trigger_sens4 = room3.to(room_bath) | room_bath.to(room3)
-
-
-    trigger_alarm = bed.to(alarm) | room1.to(alarm) | room2.to(alarm) | room3.to(alarm) | room_bath.to(alarm) | alarm.to.itself(internal=True)
+    trigger_alarm = bed.to(alarm) | room1.to(alarm) | room2.to(alarm) | room3.to(alarm) | room_bath.to(alarm)
 
     def on_enter_state(self, event, state):
         print(f"Entered state {state} with event {event}.")
