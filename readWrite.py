@@ -77,10 +77,6 @@ class Light:
 class LightController:
     ### Initializes the connection to the light component
     def __init__(self):
-        # message to pass for on
-        broker_out_on = {"state":"ON","color":{"r":255,"g":255,"b":255}}
-        self.data_out_on = json.dumps(broker_out_on)
-
         # message to pass for off
         broker_out_off = {"state":"OFF"}
         self.data_out_off = json.dumps(broker_out_off)
@@ -92,27 +88,56 @@ class LightController:
         # array containing the lights
         self.lights = []
 
+    # Function for getting color dictionary
+    def get_color_dictionary(color_key):
+        colors = {
+            'red': {'r': 255, 'g': 0, 'b': 0},
+            'green': {'r': 0, 'g': 255, 'b': 0},
+            'blue': {'r': 0, 'g': 0, 'b': 255},
+            'white': {'r': 255, 'g': 255, 'b': 255}
+        }
+
+        if color_key in colors:
+            color_value = colors[color_key]
+            color_dict = {
+                'state': 'ON',
+                'color': {
+                    'r': color_value['r'],
+                    'g': color_value['g'],
+                    'b': color_value['b']
+                }
+            }
+        else:
+            # White if not recognized
+            color_dict = {
+                'state': 'ON',
+                'color': {
+                    'r': color_value['r'],
+                    'g': color_value['g'],
+                    'b': color_value['b']
+                }
+            }
+        return color_dict
+
     ### add a new light
     def add_light(self, adress):
         light = Light(adress)
         self.lights.append(light)
 
-    ### Turns on the light with ID; ID
-    def turnOn(self, ID):
+    ### Turns on the light with ID and color
+    def turnOn(self, ID, color: str):
         self.lights[ID].set_state(True)
-        message = self.data_out_on               # Message to turn on
-        self.lights[ID].publish(message)         # turnOn message to the light with ID; ID
+        message = json.dumps(self.get_color_dictionary(color))
+        self.lights[ID].publish(message)
         
 
     ### Turns off the ligh with ID; IDt
     def turnOff(self, ID):
         self.lights[ID].set_state(False)
-        #print("Turn Off")
         message = self.data_out_off                 # Message to turn off
         self.lights[ID].publish(message)     # Publishes to self.name aka topic
 
     def alarm(self):
-        #print("Alarm")
         for light in self.lights:
             light.set_state(True)
             message = self.data_alarm

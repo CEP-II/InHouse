@@ -38,8 +38,12 @@ class LightMachine(StateMachine):
         elif self.prev_state_index < pos and pos != len(self.states)-1:
             for i, light in enumerate(self.LC.lights):
                 # Lights to turn on
-                if i == pos-1 or i == pos:
-                    self.LC.turnOn(i)
+                # Current room
+                if i == pos-1:
+                    self.LC.turnOn(i, "green")
+                # Next room
+                elif i == pos:
+                    self.LC.turnOn(i, "white")
                 # Turn off all others
                 else:
                     self.LC.turnOff(i)
@@ -48,8 +52,13 @@ class LightMachine(StateMachine):
         else:
             for i, light in enumerate(self.LC.lights):
                 # Lights to turn on
-                if i == pos-1 or i == pos-2:
-                    self.LC.turnOn(i)
+                # Current room
+                if i == pos-1:
+                    self.LC.turnOn(i, "green")
+                # Next room
+                elif i == pos-2:
+                    self.LC.turnOn(i, "white")
+
                 # Turn off all others
                 else:
                     self.LC.turnOff(i)
