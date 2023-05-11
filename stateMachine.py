@@ -32,27 +32,36 @@ class LightMachine(StateMachine):
         # Bed, turn off all lights
         if pos == 0:
             for light in self.LC.lights:
-                self.LC.turnOff(light)
+                self.LC.turnOff(i)
 
         # Walked right (excluding bathroom)
         elif self.prev_state_index < pos and pos != len(self.states)-1:
             for i, light in enumerate(self.LC.lights):
                 # Lights to turn on
-                if i == pos-1 or i == pos:
-                    self.LC.turnOn(light)
+                # Current room
+                if i == pos-1:
+                    self.LC.turnOn(i, "green")
+                # Next room
+                elif i == pos:
+                    self.LC.turnOn(i, "white")
                 # Turn off all others
                 else:
-                    self.LC.turnOff(light)
+                    self.LC.turnOff(i)
 
         # Walked left or entered bathroom
         else:
             for i, light in enumerate(self.LC.lights):
                 # Lights to turn on
-                if i == pos-1 or i == pos-2:
-                    self.LC.turnOn(light)
+                # Current room
+                if i == pos-1:
+                    self.LC.turnOn(i, "green")
+                # Next room
+                elif i == pos-2:
+                    self.LC.turnOn(i, "white")
+
                 # Turn off all others
                 else:
-                    self.LC.turnOff(light)
+                    self.LC.turnOff(i)
 
 
         self.prev_state_index = pos
