@@ -24,44 +24,46 @@ class LightMachine(StateMachine):
     trigger_alarm = bed.to(alarm) | room1.to(alarm) | room2.to(alarm) | room3.to(alarm) | room_bath.to(alarm)
 
     def on_enter_state(self, event, state):
-        
+        if(event != "trigger_alarm"):
+            pos = self.states_list.index(state)
+            print(f"Entered state '{state.id}' with event '{event}' at pos {pos} out of {len(self.states_list)-1}")
 
-        pos = self.states_list.index(state)
-        print(f"Entered state '{state.id}' with event '{event}' at pos {pos} out of {len(self.states_list)-1}")
-
-        # Bed, turn off all lights
-        if pos == 0:
-            for i, light in enumerate(self.LC.lights):
-                self.LC.turnOff(i)
-
-        # Walked right (excluding bathroom)
-        elif self.prev_state_index < pos and pos != len(self.states_list)-1:
-            for i, light in enumerate(self.LC.lights):
-                # Lights to turn on
-                # Current room
-                if i == pos-1:
-                    self.LC.turnOn(i, "green")
-                # Next room
-                elif i == pos:
-                    self.LC.turnOn(i, "white")
-                # Turn off all others
-                else:
+            # Bed, turn off all lights
+            if pos == 0:
+                for i, light in enumerate(self.LC.lights):
                     self.LC.turnOff(i)
 
-        # Walked left or entered bathroom
+            # Walked right (excluding bathroom)
+            elif self.prev_state_index < pos and pos != len(self.states_list)-1:
+                for i, light in enumerate(self.LC.lights):
+                    # Lights to turn on
+                    # Current room
+                    if i == pos-1:
+                        self.LC.turnOn(i, "green")
+                    # Next room
+                    elif i == pos:
+                        self.LC.turnOn(i, "white")
+                    # Turn off all others
+                    else:
+                        self.LC.turnOff(i)
+
+            # Walked left or entered bathroom
+            else:
+                for i, light in enumerate(self.LC.lights):
+                    # Lights to turn on
+                    # Current room
+                    if i == pos-1:
+                        self.LC.turnOn(i, "green")
+                    # Next room
+                    elif i == pos-2:
+                        self.LC.turnOn(i, "white")
+
+                    # Turn off all others
+                    else:
+                        self.LC.turnOff(i)
+
+
+            self.prev_state_index = pos
         else:
-            for i, light in enumerate(self.LC.lights):
-                # Lights to turn on
-                # Current room
-                if i == pos-1:
-                    self.LC.turnOn(i, "green")
-                # Next room
-                elif i == pos-2:
-                    self.LC.turnOn(i, "white")
-
-                # Turn off all others
-                else:
-                    self.LC.turnOff(i)
-
-
-        self.prev_state_index = pos
+            for index, light in enumerate(self.LC.lights):
+                self.LC.turnOn(index, "red")

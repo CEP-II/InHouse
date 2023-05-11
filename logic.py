@@ -78,8 +78,8 @@ class MonitorMovement:
                     self.lm.trigger_alarm()
                     self.readSensorData(index)
                     alarm = True
-                    self.deactivate
-                    return
+                    self.deactivate()
+                    
 
 
                 

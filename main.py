@@ -16,7 +16,7 @@ def get_end_time():
     end = time(7,0,0)
     end_time = datetime.combine(tomorrow,end)
     #Return for testing purposes
-    end_time = get_start_time() + timedelta(minutes=10)
+    end_time = get_start_time() + timedelta(minutes=80)
     return  end_time
 
 def main():

@@ -126,7 +126,7 @@ class LightController:
 
     ### Turns on the light with ID and color
     def turnOn(self, ID, color: str):
-        print(f"Turn on light: {ID} with color {color}")
+        print(f"Turn on light: {ID+1} with color {color}")
         self.lights[ID].set_state(True)
         message = json.dumps(self.get_color_dictionary(color))
         self.lights[ID].publish(message)
@@ -137,12 +137,6 @@ class LightController:
         self.lights[ID].set_state(False)
         message = self.data_out_off                 # Message to turn off
         self.lights[ID].publish(message)     # Publishes to self.name aka topic
-
-    def alarm(self):
-        for light in self.lights:
-            light.set_state(True)
-            message = self.data_alarm
-            light.publish(message)
     
     ### Terminates the connection
     def terminate(self, client):
