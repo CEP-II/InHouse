@@ -39,7 +39,7 @@ class Serverwriter:
         serial = "p1kk3m4nd8008bs6969"
         combined_str = {"deviceId": serial, "alarmTime": str(alarmTime), "positionId": positionId} # {string, datetime, datetime, int}
         self.json_msg = json.dumps(combined_str)
-        print("Sending Data To Server")
+        print("Sending Alarm To Server: " + json.dumps(combined_str))
         self.client.publish("database", self.json_msg)  # Publishes to server
 
 #server = Serverwriter()

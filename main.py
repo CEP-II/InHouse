@@ -7,7 +7,7 @@ from time import sleep
 
 def get_start_time():
     today = datetime.today()
-    start = time(11,0,0)
+    start = time(12,20,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -64,7 +64,7 @@ def main():
 
     # Loop that will always run
     while True:
-        sleep(1)
+        sleep(3)
         if not monitor.activeState: #monitor_state: #If the monitor state is off it should run
             #Will check if we are in the correct time frame
             if monitor.mostRecent() == 0:
@@ -98,7 +98,7 @@ def main():
             sensor_1.manipulate_sensor_reading()
             sleep(5)
             sensor_2.manipulate_sensor_reading()
-            sleep(5)
+            sleep(25)
             sensor_3.manipulate_sensor_reading()
             sleep(5)
             sensor_bath.manipulate_sensor_reading()

@@ -37,75 +37,86 @@ class MonitorMovement:
 
 
     def monitorMovementV2(self):
+        start_time = -1
+        end_time = datetime.now()
+        alarm = False
         latest = -1
         prev = -1
-        start_time = -1
-        end_time = -1
-        
+          
         while True: #self.activeState
             sleep(1)
-            # for index, sensor in enumerate(self.sensors):
-            #     if sensor.new_message:
+            for index, sensor in enumerate(self.sensors):
+                if sensor.new_message:
+                    end_time = self.readSensorData(index)
 
-            #         print(index)
-            #         end_time = datetime.now()
+                    print("\n")
+                    print("New signal from sensor: " + str(index))
 
-            #         if start_time != -1:
-            #             self.server.sendToServer(start_time, datetime.now(), index)
-            #             start_time = -1
+                    if start_time != -1:
+                        self.server.sendToServer(start_time, end_time, index)
+                        start_time = -1
 
-            #         if(index == 0):
-            #             self.lm.trigger_sens_bed()
-            #         elif(index == 1):
-            #             self.lm.trigger_sens1()
-            #         elif(index == 2):
-            #             self.lm.trigger_sens2()
-            #         elif(index == 3):
-            #             self.lm.trigger_sens3()
-            #         elif(index == 4):
-            #             self.lm.trigger_sens4()
+                    if(index == 0):
+                        self.lm.trigger_sens_bed()
+                        start_time = -1
+                    elif(index == 1):
+                        self.lm.trigger_sens1()
+                    elif(index == 2):
+                        self.lm.trigger_sens2()
+                    elif(index == 3):
+                        self.lm.trigger_sens3()
+                    elif(index == 4):
+                        self.lm.trigger_sens4()
 
-            #         start_time = datetime.now()
+                    start_time = datetime.now()
+                    latest = index
+                    
+                    print("\n")
+
+                elif not alarm and latest != 0 and (self.delta(end_time, datetime.now()) > 20):
+                    self.server.sendAlarm(start_time, latest)
+                    self.lm.trigger_alarm()
+                    self.readSensorData(index)
+                    alarm = True
+                    break
+
                 
-            #     if index != 0 and (self.delta(self.readSensorData(latest), datetime.now() )> 20):
-            #         self.server.sendAlarm(start_time, latest)
-            #         self.lm.alarm()
 
                     
 
 
 
-            sleep(1)
-            latest = self.mostRecent()
+            # sleep(1)
+            # latest = self.mostRecent()
 
-            # should run if latest sensor is different from the previous sensor or the time since reading is over 2 sek
-            if (latest != prev or (self.delta(self.readSensorData(latest), datetime.now()) > 60)): 
-                end_time = datetime.now()
+            # # should run if latest sensor is different from the previous sensor or the time since reading is over 2 sek
+            # if (latest != prev or (self.delta(self.readSensorData(latest), datetime.now()) > 60)): 
+            #     end_time = datetime.now()
 
-                if end_time != -1 and start_time != -1:
-                    self.server.sendToServer(start_time, end_time, prev)
-                    start_time = -1
-                    end_time = -1
+            #     if end_time != -1 and start_time != -1:
+            #         self.server.sendToServer(start_time, end_time, prev)
+            #         start_time = -1
+            #         end_time = -1
 
-                if(latest == 0):
-                    self.lm.trigger_sens_bed()
-                elif(latest == 1):
-                    self.lm.trigger_sens1()
-                elif(latest == 2):
-                    self.lm.trigger_sens2()
-                elif(latest == 3):
-                    self.lm.trigger_sens3()
-                elif(latest == 4):
-                    self.lm.trigger_sens4()
+            #     if(latest == 0):
+            #         self.lm.trigger_sens_bed()
+            #     elif(latest == 1):
+            #         self.lm.trigger_sens1()
+            #     elif(latest == 2):
+            #         self.lm.trigger_sens2()
+            #     elif(latest == 3):
+            #         self.lm.trigger_sens3()
+            #     elif(latest == 4):
+            #         self.lm.trigger_sens4()
 
-                start_time = datetime.now()
+            #     start_time = datetime.now()
 
-            # If it has been more than 5 minutes all of the light should turn on
-            elif (not (latest == 0) and (self.delta(self.readSensorData(latest), datetime.now() )> 20)):
-                self.server.sendAlarm(start_time, latest)
-                self.lm.trigger_alarm()
+            # # If it has been more than 5 minutes all of the light should turn on
+            # elif (not (latest == 0) and (self.delta(self.readSensorData(latest), datetime.now() )> 20)):
+            #     self.server.sendAlarm(start_time, latest)
+            #     self.lm.trigger_alarm()
 
-            prev = latest
+            # prev = latest
 
     def mostRecent(self):
         reading = self.readSensorData(0)
