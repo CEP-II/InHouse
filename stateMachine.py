@@ -24,9 +24,10 @@ class LightMachine(StateMachine):
     trigger_alarm = bed.to(alarm) | room1.to(alarm) | room2.to(alarm) | room3.to(alarm) | room_bath.to(alarm)
 
     def on_enter_state(self, event, state):
-        print(f"Entered state {state.id} with event {event}.")
+        
 
         pos = self.states_list.index(state)
+        print(f"Entered state '{state.id}' with event '{event}' at pos {pos} out of {len(self.states_list)-1}")
 
         # Bed, turn off all lights
         if pos == 0:
@@ -34,7 +35,7 @@ class LightMachine(StateMachine):
                 self.LC.turnOff(i)
 
         # Walked right (excluding bathroom)
-        elif self.prev_state_index < pos and pos != len(self.states)-1:
+        elif self.prev_state_index < pos and pos != len(self.states_list)-1:
             for i, light in enumerate(self.LC.lights):
                 # Lights to turn on
                 # Current room
