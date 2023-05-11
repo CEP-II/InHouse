@@ -5,6 +5,7 @@ class LightMachine(StateMachine):
     def __init__(self,  controller:LightController):
         self.LC = controller
         self.prev_state_index = -2
+        self.states_list = [LightMachine.bed, LightMachine.room1, LightMachine.room2, LightMachine.room3, LightMachine.room_bath]
         super().__init__()
 
     bed = State(initial=True)
@@ -13,8 +14,6 @@ class LightMachine(StateMachine):
     room3 = State()
     room_bath = State()
     alarm = State(final=True)
-
-    states = [bed, room1, room2, room3, room_bath]
     
     trigger_sens_bed = bed.to.itself(internal=True) | room1.to(bed) | room2.to(bed) | room3.to(bed) | room_bath.to(bed)
     trigger_sens1 = bed.to(room1) | room1.to.itself(internal=True) | room2.to(room1) | room3.to(room1) | room_bath.to(room1)
@@ -27,7 +26,7 @@ class LightMachine(StateMachine):
     def on_enter_state(self, event, state):
         print(f"Entered state {state.id} with event {event}.")
 
-        pos = self.states.index(state)
+        pos = self.states_list.index(state)
 
         # Bed, turn off all lights
         if pos == 0:
@@ -65,3 +64,5 @@ class LightMachine(StateMachine):
 
 
         self.prev_state_index = pos
+
+sm = LightMachine(LightController())
