@@ -7,7 +7,7 @@ from time import sleep
 
 def get_start_time():
     today = datetime.today()
-    start = time(13,35,0)
+    start = time(14,35,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -16,7 +16,7 @@ def get_end_time():
     end = time(7,0,0)
     end_time = datetime.combine(tomorrow,end)
     #Return for testing purposes
-    end_time = get_start_time() + timedelta(minutes=1)
+    end_time = get_start_time() + timedelta(minutes=10)
     return  end_time
 
 def main():
@@ -39,10 +39,10 @@ def main():
     controller.add_light("zigbee2mqtt/0x680ae2fffec0ccb7/set")
     controller.add_light("zigbee2mqtt/0xcc86ecfffebfaefc/set")
     
-    controller.turnOff(0)
-    controller.turnOff(1)
-    controller.turnOff(2)
-    controller.turnOff(3)
+    # controller.turnOff(0)
+    # controller.turnOff(1)
+    # controller.turnOff(2)
+    # controller.turnOff(3)
 
     # controller.turnOn(0)
     # sleep(1)

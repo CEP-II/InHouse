@@ -126,6 +126,7 @@ class LightController:
 
     ### Turns on the light with ID and color
     def turnOn(self, ID, color: str):
+        print(f"Turn on light: {ID} with color {color}")
         self.lights[ID].set_state(True)
         message = json.dumps(self.get_color_dictionary(color))
         self.lights[ID].publish(message)

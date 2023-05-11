@@ -25,10 +25,6 @@ class LightMachine(StateMachine):
 
     def on_enter_state(self, event, state):
         print(f"Entered state {state.id} with event {event}.")
-        print("\n")
-        print(self.states_list)
-        print("\n")
-        print(self.states_list[0])
 
         pos = self.states_list.index(state)
 
