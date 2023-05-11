@@ -7,7 +7,7 @@ from time import sleep
 
 def get_start_time():
     today = datetime.today()
-    start = time(12,20,0)
+    start = time(13,35,0)
     start_time = datetime.combine(today,start)
     return start_time
 
@@ -16,7 +16,7 @@ def get_end_time():
     end = time(7,0,0)
     end_time = datetime.combine(tomorrow,end)
     #Return for testing purposes
-    end_time = get_start_time() + timedelta(minutes=80)
+    end_time = get_start_time() + timedelta(minutes=1)
     return  end_time
 
 def main():
@@ -61,6 +61,7 @@ def main():
 
     start_time = get_start_time()
     end_time = get_end_time()
+    print("end time: " + str(end_time))
 
     # Loop that will always run
     while True:
@@ -83,7 +84,7 @@ def main():
                     sleep(10) # Will only check every 60 seconds
             else:
                 sleep(2)
-
+        
         elif datetime.now() > end_time:
             print("Past end-time")
             #monitor_state = False #If the time exceeds 7 am it will turn off the monitoring
@@ -98,9 +99,7 @@ def main():
             sensor_1.manipulate_sensor_reading()
             sleep(5)
             sensor_2.manipulate_sensor_reading()
-            print("aaah jeg falder hjælp")
-            sleep(25)
-            print("X _ X")
+            sleep(5)
             sensor_3.manipulate_sensor_reading()
             sleep(5)
             sensor_bath.manipulate_sensor_reading()
@@ -114,7 +113,9 @@ def main():
             sensor_1.manipulate_sensor_reading()
             sleep(5)
             sensor_bed.manipulate_sensor_reading()
-
+            sleep(5)
+            sensor_1.manipulate_sensor_reading()
+            sleep(20)
             #monitor.monitorMovementV2()
             #server.sendToServer({1:'Hello World'})
             sleep(60)

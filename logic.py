@@ -53,7 +53,7 @@ class MonitorMovement:
                     print("New signal from sensor: " + str(index))
 
                     if start_time != -1:
-                        self.server.sendToServer(start_time, end_time, index)
+                        self.server.sendToServer(start_time, end_time, latest)
                         start_time = -1
 
                     if(index == 0):
