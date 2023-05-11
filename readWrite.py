@@ -89,7 +89,7 @@ class LightController:
         self.lights = []
 
     # Function for getting color dictionary
-    def get_color_dictionary(color_key):
+    def get_color_dictionary(self, color_key):
         colors = {
             'red': {'r': 255, 'g': 0, 'b': 0},
             'green': {'r': 0, 'g': 255, 'b': 0},
