@@ -6,7 +6,7 @@ class Serverwriter:
     ### Initializes the connection to the light component
     def __init__(self):
         self.client = mqtt.Client()
-        self.client.connect("0.tcp.eu.ngrok.io", 11252)
+        #self.client.connect("0.tcp.eu.ngrok.io", 11252)
 
         #self.serverIP = "127.0.0.1"
 
@@ -32,7 +32,7 @@ class Serverwriter:
         combined_str = {"deviceId": serial, "startTime": str(startTime), "endTime": str(endTime), "positionId": positionID} # {string, datetime, datetime, int}
         self.json_msg = json.dumps(combined_str)
         print("Sending To Server: " + json.dumps(combined_str))
-        self.client.publish("database", self.json_msg)  # Publishes to server
+        #self.client.publish("database", self.json_msg)  # Publishes to server
 
     def sendAlarm(self, alarmTime:datetime, positionId:int):
         #serial = self.getSerial()

@@ -3,7 +3,6 @@ from threading import Thread
 import json
 from queue import Queue
 import logging
-from time import sleep
 from datetime import datetime
 
 class SensorRead:
@@ -14,23 +13,23 @@ class SensorRead:
         self.queue = Queue()                # Queues to push the sensor data into 
         self.new_message = False            # boolean to keep track wether or not there's a new message
 
-        # ## Logic to start the loop of threads
-        # client = mqtt.Client()              # Initializes the mqtt client
-        # client.on_message = self.on_message # calls the on_message function, when sensor detects motion
-        # self.sensorVal = client.on_message  # sensorval gets updated on message
-        # client.connect("localhost", 1883)   # connects the client
-        # client.subscribe(self.name)         # connects to the passed name (sensors firnedly name) "zigbee2mqtt/0x00158d000572a63f"
-        # client.loop_start()                 # Initialises the loop (Important to stop the loop when finished)
+        ## Logic to start the loop of threads
+        client = mqtt.Client()              # Initializes the mqtt client
+        client.on_message = self.on_message # calls the on_message function, when sensor detects motion
+        self.sensorVal = client.on_message  # sensorval gets updated on message
+        client.connect("localhost", 1883)   # connects the client
+        client.subscribe(self.name)         # connects to the passed name (sensors firnedly name) "zigbee2mqtt/0x00158d000572a63f"
+        client.loop_start()                 # Initialises the loop (Important to stop the loop when finished)
     
-    # ### on_message put time signatures into the queue, is called everytime sensor motion is detected
-    # def on_message(self, client, userdata, msg):
-    #     payload = msg.payload.decode('utf-8')
-    #     # data = json.loads(payload)
-    #     if True: #("illuminance" in payload  or "occupancy" in payload):# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
-    #         print("Message recieved")           # prints to console
-    #         self.new_message = True
-    #         now = datetime.now()                
-    #         self.queue.put(now)                     # put the time of the sensor reading into the queue
+    ### on_message put time signatures into the queue, is called everytime sensor motion is detected
+    def on_message(self, client, userdata, msg):
+        payload = msg.payload.decode('utf-8')
+        # data = json.loads(payload)
+        if True: #("illuminance" in payload  or "occupancy" in payload):# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
+            print("Message recieved")           # prints to console
+            self.new_message = True
+            now = datetime.now()                
+            self.queue.put(now)                     # put the time of the sensor reading into the queue
     
     ### The getData returns the latest time stamp that the sensor was activated
     def getData(self):
@@ -131,6 +130,11 @@ class LightController:
         message = json.dumps(self.get_color_dictionary(color))
         self.lights[ID].publish(message)
         
+    def alarm(self, ID):
+        print("alarm")
+        self.lights[ID].set_state(True)
+        message = json.dumps(self.data_alarm)
+        self.lights[ID].publish(message)
 
     ### Turns off the ligh with ID; IDt
     def turnOff(self, ID):

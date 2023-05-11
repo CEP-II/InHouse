@@ -46,6 +46,8 @@ class MonitorMovement:
         while self.activeState: #self.activeState
             sleep(1)
             for index, sensor in enumerate(self.sensors):
+                if index == latest and self.delta(end_time, datetime.now()) < 5:
+                    break
                 if sensor.new_message:
                     end_time = self.readSensorData(index)
 
@@ -73,7 +75,7 @@ class MonitorMovement:
                     
                     print("\n")
 
-                elif not alarm and latest != 0 and (self.delta(end_time, datetime.now()) > 20):
+                elif not alarm and latest != 0 and (self.delta(end_time, datetime.now()) > 120):
                     self.server.sendAlarm(start_time, latest)
                     self.lm.trigger_alarm()
                     self.readSensorData(index)
