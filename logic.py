@@ -47,7 +47,7 @@ class MonitorMovement:
             sleep(1)
             for index, sensor in enumerate(self.sensors):
                 if index == latest and self.delta(end_time, datetime.now()) < 5:
-                    break
+                    continue
                 if sensor.new_message:
                     end_time = self.readSensorData(index)
 
