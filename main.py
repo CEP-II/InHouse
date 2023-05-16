@@ -7,7 +7,7 @@ from time import sleep
 
 def get_start_time():
     today = datetime.today()
-    start = time(15,55,0)
+    start = time(16,55,0)
     start_time = datetime.combine(today,start)
     return start_time
 

@@ -33,7 +33,9 @@ class MonitorMovement:
 
     def deactivate(self):
         self.activeState = False
-        self.thread.join()
+        if self.thread and self.thread.is_alive():
+            self.thread.join()
+
 
 
     def monitorMovementV2(self):
