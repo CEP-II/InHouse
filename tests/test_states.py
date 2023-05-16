@@ -1,5 +1,5 @@
-from stateMachine import LightMachine
-from readWrite import LightController
+from nightguard.stateMachine import LightController 
+from nightguard.stateMachine import LightMachine
 import json
 from time import sleep
 
