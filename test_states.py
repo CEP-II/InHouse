@@ -142,11 +142,11 @@ def test_lights():
     lc.add_light("zigbee1")
     lc.add_light("zigbee2")
     lc.add_light("zigbee3")
-    assert lc.activeLights() == []
+    assert not lc.activeLights()
     sm.trigger_sens1()
     assert lc.activeLights() == [0, 1]
     sm.trigger_sens_bed()
-    assert lc.activeLights() == []
+    assert not lc.activeLights()
     sm.trigger_sens2()
     assert lc.activeLights() == [1, 2]
     sm.trigger_sens3()
