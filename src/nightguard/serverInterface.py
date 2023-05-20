@@ -129,5 +129,3 @@ class Serverwriter:
         return (IP, PORT)
 
 
-#server = Serverwriter()
-#server.sendAlarm(datetime.now(), 0)

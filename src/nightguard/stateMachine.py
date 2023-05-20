@@ -1,5 +1,5 @@
 from statemachine import StateMachine, State
-from nightguard.readWrite import LightController
+from readWrite import LightController
 
 class LightMachine(StateMachine):
     def __init__(self,  controller:LightController):
