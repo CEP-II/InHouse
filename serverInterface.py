@@ -12,7 +12,8 @@ class Serverwriter:
         self.client.connect(IP, PORT)
 
     # From https://www.raspberrypi-spy.co.uk/2012/09/getting-your-raspberry-pi-serial-number-using-python/
-    def getserial(self):
+    ### Returns the individual PI serial number
+    def getSerial(self):
         # Extract serial from cpuinfo file
         cpuserial = "0000000000000000"
         try:
@@ -26,23 +27,23 @@ class Serverwriter:
         
         return cpuserial
 
-    ### Turns on the light
+    ### Sends message with start time end time and sensor location
     def sendToServer(self, startTime:datetime, endTime:datetime, positionID:int):
-        #serial = self.getSerial()
-        serial = "p1kk3m4nd8008bs6969"
+        serial = self.getSerial()
         combined_str = {"deviceId": serial, "startTime": str(startTime), "endTime": str(endTime), "positionId": positionID} # {string, datetime, datetime, int}
         self.json_msg = json.dumps(combined_str)
         print("Sending To Server: " + json.dumps(combined_str))
-        #self.client.publish("database", self.json_msg)  # Publishes to server
+        self.client.publish("database", self.json_msg)  # Publishes to server
 
+    ### Sends accident time and position
     def sendAlarm(self, alarmTime:datetime, positionId:int):
-        #serial = self.getSerial()
-        serial = "p1kk3m4nd8008bs6969"
+        serial = self.getSerial()
         combined_str = {"deviceId": serial, "alarmTime": str(alarmTime), "positionId": positionId} # {string, datetime, datetime, int}
         self.json_msg = json.dumps(combined_str)
         print("Sending Alarm To Server: " + json.dumps(combined_str))
         self.client.publish("database", self.json_msg)  # Publishes to server
 
+    ### Returns the IP and PORT of server
     def get_mqtt_broker_ip(self):
         # define the remote host and username
         hostname = "analogskilte.dk"
@@ -128,9 +129,5 @@ class Serverwriter:
         return (IP, PORT)
 
 
-server = Serverwriter()
-server.sendAlarm(datetime.now(), 0)
-
-
 #server = Serverwriter()
-#server.sendToServer("Test of data")
+#server.sendAlarm(datetime.now(), 0)

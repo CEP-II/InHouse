@@ -24,12 +24,10 @@ class SensorRead:
     ### on_message put time signatures into the queue, is called everytime sensor motion is detected
     def on_message(self, client, userdata, msg):
         payload = msg.payload.decode('utf-8')
-        # data = json.loads(payload)
-        if True: #("illuminance" in payload  or "occupancy" in payload):# in data               # will check if illuminance is present in the data recieved, as this will prevent from loading errors
-            print("Message recieved")           # prints to console
-            self.new_message = True
-            now = datetime.now()                
-            self.queue.put(now)                     # put the time of the sensor reading into the queue
+        print("Message recieved")           # prints to console
+        self.new_message = True
+        now = datetime.now()                
+        self.queue.put(now)                     # put the time of the sensor reading into the queue
     
     ### The getData returns the latest time stamp that the sensor was activated
     def getData(self):
@@ -64,7 +62,8 @@ class Light:
         self.state = False
     
     def publish(self, message):
-        self.client.publish(self.name, message) 
+        self.client.publish(self.name, message)
+        print(f"published {message} to {self.name}") 
     
     def get_state(self):
         return self.state
@@ -125,10 +124,11 @@ class LightController:
 
     ### Turns on the light with ID and color
     def turnOn(self, ID, color: str):
-        print(f"Turn on light: {ID+1} with color {color}")
-        self.lights[ID].set_state(True)
         message = json.dumps(self.get_color_dictionary(color))
         self.lights[ID].publish(message)
+        print(f"Turn on light: {ID+1} with color {color}")
+        self.lights[ID].set_state(True)
+        
         
     def alarm(self, ID):
         print("alarm")

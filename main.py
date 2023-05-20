@@ -1,31 +1,33 @@
 from readWrite import SensorRead
 from readWrite import LightController
 from logic import MonitorMovement
-from datetime import date, datetime, time, timedelta
-from serverInterface import Serverwriter
+from datetime import datetime, time, timedelta
 from time import sleep
+import math
 
 def get_start_time():
     today = datetime.today()
-    start = time(16,55,0)
+    start = time(22,0,0)
     start_time = datetime.combine(today,start)
     return start_time
 
 def get_end_time():
     tomorrow = datetime.today() + timedelta(days = 1)
-    end = time(7,0,0)
+    end = time(0,0,0)
     end_time = datetime.combine(tomorrow,end)
-    #Return for testing purposes
-    end_time = get_start_time() + timedelta(minutes=80)
     return  end_time
 
 def main():
+    sleep(2)
     sensors = []
     sensor_bed = SensorRead("zigbee2mqtt/0x00158d000572a63f")
     sensor_1 = SensorRead("zigbee2mqtt/0x00158d00054a6fcb")
-    sensor_2 = SensorRead("zigbee2mqtt/0x842e14fffe571021")
-    sensor_3 = SensorRead("zigbee2mqtt/0xbc33acfffe167e53")
-    sensor_bath = SensorRead("zigbee2mqtt/0xbc33acfffe184596")
+    #sensor_2 = SensorRead("zigbee2mqtt/0x842e14fffe571021")
+    sensor_2 = SensorRead("zigbee2mqtt/0x00158d0007e3d31f")
+    #sensor_3 = SensorRead("zigbee2mqtt/0xbc33acfffe167e53")    
+    sensor_3 = SensorRead("zigbee2mqtt/0x00158d0007e4153d")
+    #sensor_bath = SensorRead("zigbee2mqtt/0xbc33acfffe184596")
+    sensor_bath = SensorRead("zigbee2mqtt/0x00158d0007e22215")
 
     sensors.append(sensor_bed)
     sensors.append(sensor_1)
@@ -43,20 +45,6 @@ def main():
     controller.turnOff(1)
     controller.turnOff(2)
     controller.turnOff(3)
-
-    controller.turnOn(0, "white")
-    sleep(1)
-    controller.turnOn(1, "white")
-    sleep(1)
-    controller.turnOn(2, "white")
-    sleep(1)
-    controller.turnOn(3, "white")
-    sleep(1)
-
-    # controller.turnOff(0)
-    # controller.turnOff(1)
-    # controller.turnOff(2)
-    # controller.turnOff(3)
 
     monitor = MonitorMovement(sensors, controller)
 
@@ -81,17 +69,21 @@ def main():
                     monitor.activate()
                     pass
                 else:
+                    # will sleep half of the time left to start time
                     print("Time out of bounds, sleep 10")
-                    sleep(10) # Will only check every 60 seconds
+                    time_diff = (start_time - datetime.now()).total_seconds()
+                    time_to_sleep = math.florr(0.5*(time_diff))
+                    print(f"will sleep {time_to_sleep} seconds")
+                    sleep(time_to_sleep) 
             else:
                 sleep(2)
         
         elif datetime.now() > end_time:
             print("Past end-time")
-            #monitor_state = False #If the time exceeds 7 am it will turn off the monitoring
             monitor.deactivate()
             start_time = get_start_time()
             end_time = get_end_time()
+            
 
         else:
             print("monitoring")
@@ -117,15 +109,8 @@ def main():
             # sleep(5)
             # sensor_1.manipulate_sensor_reading()
             # sleep(20)
-            # #monitor.monitorMovementV2()
-            # #server.sendToServer({1:'Hello World'})
             sleep(60)
             
-            
-            
-
-        
-
 
 if __name__ == "__main__":
     main()
