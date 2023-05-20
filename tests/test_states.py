@@ -1,6 +1,7 @@
-from stateMachine import LightMachine
-from readWrite import LightController
+from nightguard.stateMachine import LightController 
+from nightguard.stateMachine import LightMachine
 import json
+from time import sleep
 
 class mock_Light:
     def __init__(self, name):
@@ -141,11 +142,11 @@ def test_lights():
     lc.add_light("zigbee1")
     lc.add_light("zigbee2")
     lc.add_light("zigbee3")
-    assert lc.activeLights() == []
+    assert not lc.activeLights()
     sm.trigger_sens1()
     assert lc.activeLights() == [0, 1]
     sm.trigger_sens_bed()
-    assert lc.activeLights() == []
+    assert not lc.activeLights()
     sm.trigger_sens2()
     assert lc.activeLights() == [1, 2]
     sm.trigger_sens3()
@@ -154,3 +155,17 @@ def test_lights():
     assert lc.activeLights() == [2, 3]
     sm.trigger_sens4()
     assert lc.activeLights() == [1, 2]
+
+def test_alarm():
+    lc = mock_LightController()
+    sm = LightMachine(lc)
+    lc.add_light("zigbee0")
+    lc.add_light("zigbee1")
+    lc.add_light("zigbee2")
+    lc.add_light("zigbee3")
+    # Starts in bed, where alarm is never triggered
+    # Moving to room1 to be able to trigger alarm
+    sm.trigger_sens1()
+    sm.trigger_alarm()
+    assert sm.current_state.id == "alarm"
+    assert len(lc.activeLights()) == 4
