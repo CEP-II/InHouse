@@ -37,7 +37,7 @@ class MonitorMovement:
             self.thread.join()
 
 
-
+    ### Function that will run concurrently with main, and will check for new sensor readings
     def monitorMovement(self):
         start_time = -1
         end_time = datetime.now()
@@ -84,7 +84,7 @@ class MonitorMovement:
                     alarm = True
                     return
 
-
+    ### Will return the most recent sensor reading
     def mostRecent(self):
         reading = self.readSensorData(0)
 
